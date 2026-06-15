@@ -1262,7 +1262,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   enemy: {fileID: 933444076}
   _player: {fileID: 1762682265}
-  lookAheadLength: 5
+  lookAheadLength: 10
 --- !u!1 &987519853
 GameObject:
   m_ObjectHideFlags: 0
