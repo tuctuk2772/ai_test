@@ -50,6 +50,8 @@ public partial class AssignNamesAction : Action
             Name.Value = "Ran out of names!";
         }
 
+        Enemy.Value.gameObject.transform.parent.name = Name.Value;
+
         return Status.Running;
     }
 
