@@ -40,6 +40,8 @@ public partial class AssignNamesAction : Action
         m_EnemyNumber = s_EnemyCounter++ % 20;
         Number.Value = m_EnemyNumber;
 
+        Enemy.Value.transform.parent.GetComponent<WatchPlayer>().enemyNumber = m_EnemyNumber;
+
         if (availableNames.Count > 0)
         {
             Name.Value = availableNames[0].ToString();

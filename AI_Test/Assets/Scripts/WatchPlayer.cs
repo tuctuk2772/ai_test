@@ -1,10 +1,13 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 public class WatchPlayer : MonoBehaviour
 {
+    [HideInInspector] public int enemyNumber;
+
     [SerializeField] private Animator enemy;
     [SerializeField] private Animator _player;
 
@@ -36,10 +39,83 @@ public class WatchPlayer : MonoBehaviour
     private Vector2[] sixthSenseCoordinates = new Vector2[6];
 
     bool inRange = false;
+    Transform headBone => enemy.GetBoneTransform(HumanBodyBones.Head);
+
+    private void Start()
+    {
+        if(headBone == null)
+        {
+            Debug.LogError("Can't find head!");
+        }
+
+        for (int i = 0; i < 3; i++)
+        {
+            Vector3 localSpottedOffset = new();
+            Vector3 localCuriousOffset = new();
+            Vector3 localSixthOffset = new();
+
+            switch (i)
+            {
+                case 0:
+                    localSpottedOffset = new Vector3(getSpottedHorizontalMaxDistance * getSpottedVerticalMaxPercentage, 0f, getSpottedVerticalOffset);
+                    localCuriousOffset = new Vector3(getCuriousHorizontalMaxDistance * getCuriousVerticalMaxPercentage, 0f, getCuriousVerticalOffset);
+                    localSixthOffset = new Vector3(sixthSenseHorizontal, 0f, -sixthSenseVerticalOffset);
+                    break;
+                case 1:
+                    localSpottedOffset = new Vector3(getSpottedHorizontalMaxDistance, 0f, getSpottedVerticalMaxDistance * getSpottedHorizontalMaxPercentage + getSpottedVerticalOffset);
+                    localCuriousOffset = new Vector3(getCuriousHorizontalMaxDistance, 0f, getCuriousVerticalMaxDistance * getCuriousHorizontalMaxPercentage + getCuriousVerticalOffset);
+                    localSixthOffset = new Vector3(sixthSenseHorizontal, 0f, -sixthSenseVertical - sixthSenseVerticalOffset);
+                    break;
+                case 2:
+                    localSpottedOffset = new Vector3(getSpottedHorizontalMaxDistance * getSpottedVerticalMaxPercentage, 0f, getSpottedVerticalMaxDistance + getSpottedVerticalOffset);
+                    localCuriousOffset = new Vector3(getCuriousHorizontalMaxDistance * getCuriousVerticalMaxPercentage, 0f, getCuriousVerticalMaxDistance + getCuriousVerticalOffset);
+                    localSixthOffset = new Vector3(sixthSenseHorizontal * sixthSenseAnglePercentage, 0f, -sixthSenseVertical - sixthSenseVerticalOffset);
+                    break;
+            }
+
+            Vector3 inverseSpottedOffset =
+                new Vector3(-localSpottedOffset.x, localSpottedOffset.y, localSpottedOffset.z);
+
+            Vector3 inverseCuriousOffset =
+                new Vector3(-localCuriousOffset.x, localCuriousOffset.y, localCuriousOffset.z);
+
+            Vector3 inverseSixthOffset =
+                new Vector3(-localSixthOffset.x, localSixthOffset.y, localSixthOffset.z);
+
+            getSpottedCoordinates[i] = new Vector2(localSpottedOffset.x, localSpottedOffset.z);
+            getSpottedCoordinates[5 - i] = new Vector2(inverseSpottedOffset.x, inverseSpottedOffset.z);
+
+            getCuriousCoordinates[i] = new Vector2(localCuriousOffset.x, localCuriousOffset.z);
+            getCuriousCoordinates[5 - i] = new Vector2(inverseCuriousOffset.x, inverseCuriousOffset.z);
+
+            sixthSenseCoordinates[i] = new Vector2(localSixthOffset.x, localSixthOffset.z);
+            sixthSenseCoordinates[i + 3] = new Vector2(inverseSixthOffset.x, inverseSixthOffset.z);
+        }
+    }
 
     private void Update()
     {
+        //runs only 3 times per second
+        if (Time.frameCount % (20+enemyNumber) != 0) return;
 
+        //Debug.Log($"running on frame {Time.frameCount}!");
+
+        Vector3 headPosition = headBone.position;
+        Quaternion headRotation = headBone.rotation;
+
+        inRange = false;
+
+        //todo (broken) - need to account for head rotation
+        bool inHorizontalRange = _player.transform.position.x < headPosition.x + (headRotation * getSpottedCoordinates[0]).x;
+            //&& _player.transform.position.x > headPosition.x + (headRotation * getSpottedCoordinates[5]).x;
+
+        //bool inVerticalRange = _player.transform.position.z < headPosition.z + (headRotation * getSpottedCoordinates[2]).y
+        //    && _player.transform.position.z > headPosition.z + (headRotation * getSpottedCoordinates[0]).y;
+
+        if (inHorizontalRange)
+        {
+            inRange = true;
+        }
     }
 
     private void OnDrawGizmos()
