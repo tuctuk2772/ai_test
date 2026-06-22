@@ -21,75 +21,6 @@ MonoBehaviour:
     RefIds:
     - rid: -2
       type: {class: , ns: , asm: }
-    - rid: 3431466172125282742
-      type: {class: 'BlackboardVariable`1[[System.Single, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        GUID:
-          m_Value0: 0
-          m_Value1: 0
-        Name: 
-        m_Value: 3
-    - rid: 3431466172125282743
-      type: {class: 'BlackboardVariable`1[[System.Single, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        GUID:
-          m_Value0: 0
-          m_Value1: 0
-        Name: 
-        m_Value: 1
-    - rid: 3431466172125282744
-      type: {class: 'BlackboardVariable`1[[System.Single, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        GUID:
-          m_Value0: 0
-          m_Value1: 0
-        Name: 
-        m_Value: 0.2
-    - rid: 3431466172125282745
-      type: {class: 'BlackboardVariable`1[[System.String, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        GUID:
-          m_Value0: 0
-          m_Value1: 0
-        Name: 
-        m_Value: SpeedMagnitude
-    - rid: 3431466172125282746
-      type: {class: 'BlackboardVariable`1[[System.Boolean, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        GUID:
-          m_Value0: 0
-          m_Value1: 0
-        Name: 
-        m_Value: 1
-    - rid: 3431466172125282760
-      type: {class: Start, ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        ID:
-          m_Value0: 6993864443323423449
-          m_Value1: 14561944971578335642
-        Graph:
-          rid: 4800875794485215419
-        m_Parent:
-          rid: -2
-        m_Child:
-          rid: 3431466172125282761
-        Repeat: 0
-        AllowMultipleRepeatsPerTick: 0
-    - rid: 3431466172125282761
-      type: {class: SequenceComposite, ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        ID:
-          m_Value0: 10058533686072842079
-          m_Value1: 13175488892436184334
-        Graph:
-          rid: 4800875794485215419
-        m_Parent:
-          rid: 3431466172125282760
-        m_Children:
-        - rid: 3431466172125282768
-        - rid: 3431466172125282769
-        - rid: 3431466172125282770
-        m_RegisteredObservers: []
     - rid: 3431466172125282762
       type: {class: 'BlackboardVariable`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]', ns: Unity.Behavior, asm: Unity.Behavior}
       data:
@@ -139,73 +70,6 @@ MonoBehaviour:
           m_Value1: 1066697648233252275
         Name: Can See Player
         m_Value: 0
-    - rid: 3431466172125282768
-      type: {class: AssignNamesAction, ns: , asm: Assembly-CSharp}
-      data:
-        ID:
-          m_Value0: 13377416734739208572
-          m_Value1: 15852197186148041626
-        Graph:
-          rid: 4800875794485215419
-        m_Parent:
-          rid: 3431466172125282761
-        Enemy:
-          rid: 3431466172125282762
-        Name:
-          rid: 3431466172125282765
-        Number:
-          rid: 3431466172125282763
-    - rid: 3431466172125282769
-      type: {class: CreatePatrolAction, ns: , asm: Assembly-CSharp}
-      data:
-        ID:
-          m_Value0: 1260785544632301368
-          m_Value1: 1254959999926231112
-        Graph:
-          rid: 4800875794485215419
-        m_Parent:
-          rid: 3431466172125282761
-        Self:
-          rid: 3431466172125282762
-        Patrols:
-          rid: 3431466172125282766
-    - rid: 3431466172125282770
-      type: {class: RepeaterModifier, ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        ID:
-          m_Value0: 8467582880906206885
-          m_Value1: 10216269439509546158
-        Graph:
-          rid: 4800875794485215419
-        m_Parent:
-          rid: 3431466172125282761
-        m_Child:
-          rid: 3431466172125282771
-        m_AllowMultipleRepeatsPerTick: 0
-    - rid: 3431466172125282771
-      type: {class: PatrolAction, ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        ID:
-          m_Value0: 13646698090366807058
-          m_Value1: 11377663643626925020
-        Graph:
-          rid: 4800875794485215419
-        m_Parent:
-          rid: 3431466172125282770
-        Agent:
-          rid: 3431466172125282762
-        Waypoints:
-          rid: 3431466172125282766
-        Speed:
-          rid: 3431466172125282742
-        WaypointWaitTime:
-          rid: 3431466172125282743
-        DistanceThreshold:
-          rid: 3431466172125282744
-        AnimatorSpeedParam:
-          rid: 3431466172125282745
-        PreserveLatestPatrolPoint:
-          rid: 3431466172125282746
     - rid: 4800875794485215419
       type: {class: BehaviorGraphModule, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
@@ -217,8 +81,8 @@ MonoBehaviour:
           rid: 4800875794485215420
         BlackboardGroupReferences: []
         Root:
-          rid: 3431466172125282760
-        m_VersionTimestamp: 639170418641469418
+          rid: 4800876198984417281
+        m_VersionTimestamp: 639177261297691733
     - rid: 4800875794485215420
       type: {class: BlackboardReference, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
@@ -235,6 +99,64 @@ MonoBehaviour:
         - rid: 3431466172125282765
         - rid: 3431466172125282766
         - rid: 3431466172125282767
+    - rid: 4800876198984417281
+      type: {class: Start, ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        ID:
+          m_Value0: 6993864443323423449
+          m_Value1: 14561944971578335642
+        Graph:
+          rid: 4800875794485215419
+        m_Parent:
+          rid: -2
+        m_Child:
+          rid: 4800876198984417282
+        Repeat: 0
+        AllowMultipleRepeatsPerTick: 0
+    - rid: 4800876198984417282
+      type: {class: SequenceComposite, ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        ID:
+          m_Value0: 10058533686072842079
+          m_Value1: 13175488892436184334
+        Graph:
+          rid: 4800875794485215419
+        m_Parent:
+          rid: 4800876198984417281
+        m_Children:
+        - rid: 4800876198984417283
+        - rid: 4800876198984417284
+        m_RegisteredObservers: []
+    - rid: 4800876198984417283
+      type: {class: AssignNamesAction, ns: , asm: Assembly-CSharp}
+      data:
+        ID:
+          m_Value0: 13377416734739208572
+          m_Value1: 15852197186148041626
+        Graph:
+          rid: 4800875794485215419
+        m_Parent:
+          rid: 4800876198984417282
+        Enemy:
+          rid: 3431466172125282762
+        Name:
+          rid: 3431466172125282765
+        Number:
+          rid: 3431466172125282763
+    - rid: 4800876198984417284
+      type: {class: CreatePatrolAction, ns: , asm: Assembly-CSharp}
+      data:
+        ID:
+          m_Value0: 1260785544632301368
+          m_Value1: 1254959999926231112
+        Graph:
+          rid: 4800875794485215419
+        m_Parent:
+          rid: 4800876198984417282
+        Self:
+          rid: 3431466172125282762
+        Patrols:
+          rid: 3431466172125282766
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -256,7 +178,7 @@ MonoBehaviour:
   - rid: 3431466016794214648
   - rid: 3431466172125282525
   - rid: 3431466172125282665
-  m_VersionTimestamp: 639170418641469418
+  m_VersionTimestamp: 639177261297691733
   m_SerializedVersion: 3
   m_DebugInfo: {fileID: 6025086718115213368}
   m_RuntimeGraph: {fileID: -4889546364304998784}
@@ -541,7 +463,6 @@ MonoBehaviour:
         m_Connections:
         - rid: 3431466015484019500
         - rid: 3431466172125282666
-        - rid: 3431466016794214649
     - rid: 3431466015484019639
       type: {class: 'TypedVariableModel`1[[System.Int32, mscorlib]]', ns: Unity.Behavior.GraphFramework, asm: Unity.Behavior.GraphFramework}
       data:
@@ -605,8 +526,7 @@ MonoBehaviour:
         m_IsFloating: 0
         m_NodeModel:
           rid: 3431466016794214648
-        m_Connections:
-        - rid: 3431466015484019597
+        m_Connections: []
     - rid: 3431466016794214650
       type: {class: PortModel, ns: Unity.Behavior.GraphFramework, asm: Unity.Behavior.GraphFramework}
       data:

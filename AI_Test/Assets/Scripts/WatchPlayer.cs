@@ -31,9 +31,9 @@ public class WatchPlayer : MonoBehaviour
     [SerializeField, Range(0, 1)] private float sixthSenseAnglePercentage = 0.75f;
 
     [Header("Temp")]
-    [SerializeField] private Vector2[] getCuriousCoordinates = new Vector2[6];
-    [SerializeField] private Vector2[] getSpottedCoordinates = new Vector2[6];
-    [SerializeField] private Vector2[] sixthSenseCoordinates = new Vector2[6];
+    private Vector2[] getCuriousCoordinates = new Vector2[6];
+    private Vector2[] getSpottedCoordinates = new Vector2[6];
+    private Vector2[] sixthSenseCoordinates = new Vector2[6];
 
     bool inRange = false;
 
