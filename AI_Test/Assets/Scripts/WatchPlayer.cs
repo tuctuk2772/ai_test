@@ -43,7 +43,7 @@ public class WatchPlayer : MonoBehaviour
 
     private void Start()
     {
-        if(headBone == null)
+        if (headBone == null)
         {
             Debug.LogError("Can't find head!");
         }
@@ -96,7 +96,7 @@ public class WatchPlayer : MonoBehaviour
     private void Update()
     {
         //runs only 3 times per second
-        if (Time.frameCount % (20+enemyNumber) != 0) return;
+        if (Time.frameCount % (20 + enemyNumber) != 0) return;
 
         //Debug.Log($"running on frame {Time.frameCount}!");
 
@@ -105,14 +105,16 @@ public class WatchPlayer : MonoBehaviour
 
         inRange = false;
 
-        //todo (broken) - need to account for head rotation
-        bool inHorizontalRange = _player.transform.position.x < headPosition.x + (headRotation * getSpottedCoordinates[0]).x;
-            //&& _player.transform.position.x > headPosition.x + (headRotation * getSpottedCoordinates[5]).x;
+        Vector3 playerWorldPos = _player.transform.position;
+        Vector3 playerLocalToHead = Quaternion.Inverse(headRotation) * (playerWorldPos - headPosition);
 
-        //bool inVerticalRange = _player.transform.position.z < headPosition.z + (headRotation * getSpottedCoordinates[2]).y
-        //    && _player.transform.position.z > headPosition.z + (headRotation * getSpottedCoordinates[0]).y;
+        bool inHorizontalRange = playerLocalToHead.x > (headRotation * getSpottedCoordinates[0]).x
+            && playerLocalToHead.x < (headRotation * getSpottedCoordinates[5]).x;
 
-        if (inHorizontalRange)
+        bool inVerticalRange = playerLocalToHead.z < (headRotation * getSpottedCoordinates[2]).y
+            && playerLocalToHead.z > (headRotation * getSpottedCoordinates[0]).y;
+
+        if (inHorizontalRange && inVerticalRange)
         {
             inRange = true;
         }
@@ -214,7 +216,7 @@ public class WatchPlayer : MonoBehaviour
             }
         }
 
-        Gizmos.color = Color.white;
+        Gizmos.color = Color.blue;
 
         DebugDrawRangeLines();
     }
