@@ -114,6 +114,9 @@ public class WatchPlayer : MonoBehaviour
         bool inVerticalRange = playerLocalToHead.z < (headRotation * getSpottedCoordinates[2]).y
             && playerLocalToHead.z > (headRotation * getSpottedCoordinates[0]).y;
 
+        //for triangles on the edges, horizontal and vertical need to be in sync, so i need
+        //to create a system where it grabs the vertical, and then calculates the max horizontal it can be
+
         if (inHorizontalRange && inVerticalRange)
         {
             inRange = true;
@@ -196,6 +199,7 @@ public class WatchPlayer : MonoBehaviour
             Gizmos.DrawLine(headPosition + (flip90 * getCuriousCoordinates[i]), headPosition + (flip90 * getCuriousCoordinates[(i + 1) % 6]));
         }
 
+        //sixth sense vertical offset broken
         if (sixthSense)
         {
             Vector3 sixthSenseOffset = headPosition + new Vector3(0f, 0f, -sixthSenseVerticalOffset);
@@ -216,7 +220,7 @@ public class WatchPlayer : MonoBehaviour
             }
         }
 
-        Gizmos.color = Color.blue;
+        Gizmos.color = Color.deepPink;
 
         DebugDrawRangeLines();
     }
