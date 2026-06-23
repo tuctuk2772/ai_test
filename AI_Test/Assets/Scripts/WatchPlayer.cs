@@ -34,25 +34,20 @@ public class WatchPlayer : MonoBehaviour
     [SerializeField, Range(0, 1)] private float sixthSenseAnglePercentage = 0.75f;
 
     [Header("Temp")]
-    private Vector2[] getCuriousCoordinates = new Vector2[6];
-    private Vector2[] getSpottedCoordinates = new Vector2[6];
-    private Vector2[] sixthSenseCoordinates = new Vector2[6];
+    private Vector3[] getCuriousCoordinates = new Vector3[6];
+    private Vector3[] getSpottedCoordinates = new Vector3[6];
+    private Vector3[] sixthSenseCoordinates = new Vector3[6];
 
     bool inRange = false;
     Transform headBone => enemy.GetBoneTransform(HumanBodyBones.Head);
 
-    private void Start()
+    private void BuildCoordinates()
     {
-        if (headBone == null)
+        for(int i = 0; i < 3; i++)
         {
-            Debug.LogError("Can't find head!");
-        }
-
-        for (int i = 0; i < 3; i++)
-        {
-            Vector3 localSpottedOffset = new();
-            Vector3 localCuriousOffset = new();
-            Vector3 localSixthOffset = new();
+            Vector3 localSpottedOffset = Vector3.zero;
+            Vector3 localCuriousOffset = Vector3.zero;
+            Vector3 localSixthOffset = Vector3.zero;
 
             switch (i)
             {
@@ -71,34 +66,41 @@ public class WatchPlayer : MonoBehaviour
                     localCuriousOffset = new Vector3(getCuriousHorizontalMaxDistance * getCuriousVerticalMaxPercentage, 0f, getCuriousVerticalMaxDistance + getCuriousVerticalOffset);
                     localSixthOffset = new Vector3(sixthSenseHorizontal * sixthSenseAnglePercentage, 0f, -sixthSenseVertical - sixthSenseVerticalOffset);
                     break;
+                default:
+                    Debug.LogError("Something went wrong while building");
+                    break;
             }
 
-            Vector3 inverseSpottedOffset =
-                new Vector3(-localSpottedOffset.x, localSpottedOffset.y, localSpottedOffset.z);
+                    Vector3 inverseSpottedOffset = new Vector3(-localSpottedOffset.x, 0f, localSpottedOffset.z);
+                    Vector3 inverseCuriousOffset = new Vector3(-localCuriousOffset.x, 0f, localCuriousOffset.z);
+                    Vector3 inverseSixthOffset = new Vector3(-localSixthOffset.x, 0f, localSixthOffset.z);
 
-            Vector3 inverseCuriousOffset =
-                new Vector3(-localCuriousOffset.x, localCuriousOffset.y, localCuriousOffset.z);
+                    getSpottedCoordinates[i] = localSpottedOffset;
+                    getSpottedCoordinates[5 - i] = inverseSpottedOffset;
 
-            Vector3 inverseSixthOffset =
-                new Vector3(-localSixthOffset.x, localSixthOffset.y, localSixthOffset.z);
+                    getCuriousCoordinates[i] = localCuriousOffset;
+                    getCuriousCoordinates[5 - i] = inverseCuriousOffset;
 
-            getSpottedCoordinates[i] = new Vector2(localSpottedOffset.x, localSpottedOffset.z);
-            getSpottedCoordinates[5 - i] = new Vector2(inverseSpottedOffset.x, inverseSpottedOffset.z);
-
-            getCuriousCoordinates[i] = new Vector2(localCuriousOffset.x, localCuriousOffset.z);
-            getCuriousCoordinates[5 - i] = new Vector2(inverseCuriousOffset.x, inverseCuriousOffset.z);
-
-            sixthSenseCoordinates[i] = new Vector2(localSixthOffset.x, localSixthOffset.z);
-            sixthSenseCoordinates[i + 3] = new Vector2(inverseSixthOffset.x, inverseSixthOffset.z);
+                    sixthSenseCoordinates[i] = localSixthOffset;
+                    sixthSenseCoordinates[i + 3] = inverseSixthOffset;
+            }
         }
+
+    private void Start()
+    {
+        if (headBone == null)
+        {
+            Debug.LogError("Can't find head!");
+        }
+
+        BuildCoordinates();
+
     }
 
     private void Update()
     {
         //runs only 3 times per second
         if (Time.frameCount % (20 + enemyNumber) != 0) return;
-
-        //Debug.Log($"running on frame {Time.frameCount}!");
 
         Vector3 headPosition = headBone.position;
         Quaternion headRotation = headBone.rotation;
@@ -108,19 +110,21 @@ public class WatchPlayer : MonoBehaviour
         Vector3 playerWorldPos = _player.transform.position;
         Vector3 playerLocalToHead = Quaternion.Inverse(headRotation) * (playerWorldPos - headPosition);
 
-        bool inHorizontalRange = playerLocalToHead.x > (headRotation * getSpottedCoordinates[0]).x
-            && playerLocalToHead.x < (headRotation * getSpottedCoordinates[5]).x;
-
-        bool inVerticalRange = playerLocalToHead.z < (headRotation * getSpottedCoordinates[2]).y
-            && playerLocalToHead.z > (headRotation * getSpottedCoordinates[0]).y;
-
-        //for triangles on the edges, horizontal and vertical need to be in sync, so i need
-        //to create a system where it grabs the vertical, and then calculates the max horizontal it can be
-
-        if (inHorizontalRange && inVerticalRange)
+        if (TriangleCheck(0, playerLocalToHead) || TriangleCheck(1,playerLocalToHead))
         {
             inRange = true;
         }
+    }
+
+    //coordinates to calculate correctly are 0 and 1, because it is reflected horizontally
+    private bool TriangleCheck(int coordinateNumber, Vector3 playerLocalToHead)
+    {
+        bool inVerticalRange = playerLocalToHead.z > getSpottedCoordinates[coordinateNumber].z && playerLocalToHead.z < getSpottedCoordinates[coordinateNumber+1].z;
+
+        float tEdge = Mathf.InverseLerp(getSpottedCoordinates[coordinateNumber].z, getSpottedCoordinates[coordinateNumber + 1].z, playerLocalToHead.z);
+        float maxHorizontalAtZ = Mathf.Lerp(getSpottedCoordinates[coordinateNumber].x, getSpottedCoordinates[coordinateNumber + 1].x, tEdge);
+
+        return inVerticalRange && Mathf.Abs(playerLocalToHead.x) <= maxHorizontalAtZ;
     }
 
     private void OnDrawGizmos()
@@ -129,48 +133,18 @@ public class WatchPlayer : MonoBehaviour
         Vector3 headPosition = headBone.position;
         Quaternion headRotation = headBone.rotation;
 
+        BuildCoordinates();
+
         for (int i = 0; i < 3; i++)
         {
-            Vector3 localSpottedOffset = new();
-            Vector3 localCuriousOffset = new();
-            Vector3 localSixthOffset = new();
+            Vector3 localSpottedOffset = getSpottedCoordinates[i];
+            Vector3 inverseSpottedOffset = getSpottedCoordinates[5 - i];
 
-            switch (i)
-            {
-                case 0:
-                    localSpottedOffset = new Vector3(getSpottedHorizontalMaxDistance * getSpottedVerticalMaxPercentage, 0f, getSpottedVerticalOffset);
-                    localCuriousOffset = new Vector3(getCuriousHorizontalMaxDistance * getCuriousVerticalMaxPercentage, 0f, getCuriousVerticalOffset);
-                    localSixthOffset = new Vector3(sixthSenseHorizontal, 0f, -sixthSenseVerticalOffset);
-                    break;
-                case 1:
-                    localSpottedOffset = new Vector3(getSpottedHorizontalMaxDistance, 0f, getSpottedVerticalMaxDistance * getSpottedHorizontalMaxPercentage + getSpottedVerticalOffset);
-                    localCuriousOffset = new Vector3(getCuriousHorizontalMaxDistance, 0f, getCuriousVerticalMaxDistance * getCuriousHorizontalMaxPercentage + getCuriousVerticalOffset);
-                    localSixthOffset = new Vector3(sixthSenseHorizontal, 0f, -sixthSenseVertical - sixthSenseVerticalOffset);
-                    break;
-                case 2:
-                    localSpottedOffset = new Vector3(getSpottedHorizontalMaxDistance * getSpottedVerticalMaxPercentage, 0f, getSpottedVerticalMaxDistance + getSpottedVerticalOffset);
-                    localCuriousOffset = new Vector3(getCuriousHorizontalMaxDistance * getCuriousVerticalMaxPercentage, 0f, getCuriousVerticalMaxDistance + getCuriousVerticalOffset);
-                    localSixthOffset = new Vector3(sixthSenseHorizontal * sixthSenseAnglePercentage, 0f, -sixthSenseVertical - sixthSenseVerticalOffset);
-                    break;
-            }
+            Vector3 localCuriousOffset = getCuriousCoordinates[i];
+            Vector3 inverseCuriousOffset = getCuriousCoordinates[5 - i];
 
-            Vector3 inverseSpottedOffset =
-                new Vector3(-localSpottedOffset.x, localSpottedOffset.y, localSpottedOffset.z);
-
-            Vector3 inverseCuriousOffset =
-                new Vector3(-localCuriousOffset.x, localCuriousOffset.y, localCuriousOffset.z);
-
-            Vector3 inverseSixthOffset =
-                new Vector3(-localSixthOffset.x, localSixthOffset.y, localSixthOffset.z);
-
-            getSpottedCoordinates[i] = new Vector2(localSpottedOffset.x, localSpottedOffset.z);
-            getSpottedCoordinates[5 - i] = new Vector2(inverseSpottedOffset.x, inverseSpottedOffset.z);
-
-            getCuriousCoordinates[i] = new Vector2(localCuriousOffset.x, localCuriousOffset.z);
-            getCuriousCoordinates[5 - i] = new Vector2(inverseCuriousOffset.x, inverseCuriousOffset.z);
-
-            sixthSenseCoordinates[i] = new Vector2(localSixthOffset.x, localSixthOffset.z);
-            sixthSenseCoordinates[i + 3] = new Vector2(inverseSixthOffset.x, inverseSixthOffset.z);
+            Vector3 localSixthOffset = sixthSenseCoordinates[i];
+            Vector3 inverseSixthOffset = sixthSenseCoordinates[i + 3];
 
             Gizmos.color = Color.red;
             Gizmos.DrawSphere(headPosition + (headRotation * localSpottedOffset), 0.1f);
@@ -190,38 +164,36 @@ public class WatchPlayer : MonoBehaviour
 
         for (int i = 0; i < 6; i++)
         {
-            Quaternion flip90 = headRotation * Quaternion.Euler(90, 0, 0);
-
             Gizmos.color = Color.red;
-            Gizmos.DrawLine(headPosition + (flip90 * getSpottedCoordinates[i]), headPosition + (flip90 * getSpottedCoordinates[(i + 1) % 6]));
+            Gizmos.DrawLine(
+                headPosition + (headRotation * getSpottedCoordinates[i]),
+                headPosition + (headRotation * getSpottedCoordinates[(i + 1) % 6]));
 
             Gizmos.color = Color.yellow;
-            Gizmos.DrawLine(headPosition + (flip90 * getCuriousCoordinates[i]), headPosition + (flip90 * getCuriousCoordinates[(i + 1) % 6]));
+            Gizmos.DrawLine(
+                headPosition + (headRotation * getCuriousCoordinates[i]),
+                headPosition + (headRotation * getCuriousCoordinates[(i + 1) % 6]));
         }
 
-        //sixth sense vertical offset broken
         if (sixthSense)
         {
-            Vector3 sixthSenseOffset = headPosition + new Vector3(0f, 0f, -sixthSenseVerticalOffset);
+            Vector3 sixthSenseOrigin = headPosition + headRotation * new Vector3(0f, 0f, -sixthSenseVerticalOffset);
 
-            Quaternion flip90 = headRotation * Quaternion.Euler(90, 0, 0);
             Gizmos.color = immediateSense ? Color.red : Color.yellow;
 
-            Gizmos.DrawLine(sixthSenseOffset, headPosition + (flip90 * sixthSenseCoordinates[0]));
-            Gizmos.DrawLine(sixthSenseOffset, headPosition + (flip90 * sixthSenseCoordinates[3]));
-
-            Gizmos.DrawLine(headPosition + (flip90 * sixthSenseCoordinates[2]), sixthSenseOffset);
-            Gizmos.DrawLine(headPosition + (flip90 * sixthSenseCoordinates[5]), sixthSenseOffset);
+            Gizmos.DrawLine(sixthSenseOrigin, headPosition + (headRotation * sixthSenseCoordinates[0]));
+            Gizmos.DrawLine(sixthSenseOrigin, headPosition + (headRotation * sixthSenseCoordinates[3]));
+            Gizmos.DrawLine(headPosition + (headRotation * sixthSenseCoordinates[2]), sixthSenseOrigin);
+            Gizmos.DrawLine(headPosition + (headRotation * sixthSenseCoordinates[5]), sixthSenseOrigin);
 
             for (int i = 0; i < 2; i++)
             {
-                Gizmos.DrawLine(headPosition + (flip90 * sixthSenseCoordinates[i]), headPosition + (flip90 * sixthSenseCoordinates[i + 1]));
-                Gizmos.DrawLine(headPosition + (flip90 * sixthSenseCoordinates[i + 3]), headPosition + (flip90 * sixthSenseCoordinates[3 + i + 1]));
+                Gizmos.DrawLine(headPosition + (headRotation * sixthSenseCoordinates[i]), headPosition + (headRotation * sixthSenseCoordinates[i + 1]));
+                Gizmos.DrawLine(headPosition + (headRotation * sixthSenseCoordinates[i + 3]), headPosition + (headRotation * sixthSenseCoordinates[3 + i + 1]));
             }
         }
 
-        Gizmos.color = Color.deepPink;
-
+        Gizmos.color = Color.magenta;
         DebugDrawRangeLines();
     }
 
