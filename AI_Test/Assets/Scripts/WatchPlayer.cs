@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using Unity.Behavior;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -9,7 +10,11 @@ public class WatchPlayer : MonoBehaviour
     [HideInInspector] public int enemyNumber;
 
     [SerializeField] private Animator enemy;
+    [SerializeField] private BehaviorGraphAgent enemy_ai;
     [SerializeField] private Animator _player;
+
+    private BlackboardVariable<Detection> _detection;
+    [SerializeField] public Detection debug_ai_detection;
 
     [Header("Get Spotted")]
     [SerializeField, Range(0, 2)] private float getSpottedVerticalOffset = 1f;
@@ -34,11 +39,10 @@ public class WatchPlayer : MonoBehaviour
     [SerializeField, Range(0, 1)] private float sixthSenseAnglePercentage = 0.75f;
 
     [Header("Temp")]
-    private Vector3[] getCuriousCoordinates = new Vector3[6];
-    private Vector3[] getSpottedCoordinates = new Vector3[6];
-    private Vector3[] sixthSenseCoordinates = new Vector3[6];
+    private Vector3[] getCuriousCoordinates = new Vector3[3];
+    private Vector3[] getSpottedCoordinates = new Vector3[3];
+    private Vector3[] sixthSenseCoordinates = new Vector3[3];
 
-    bool inRange = false;
     Transform headBone => enemy.GetBoneTransform(HumanBodyBones.Head);
 
     private void BuildCoordinates()
@@ -76,13 +80,8 @@ public class WatchPlayer : MonoBehaviour
                     Vector3 inverseSixthOffset = new Vector3(-localSixthOffset.x, 0f, localSixthOffset.z);
 
                     getSpottedCoordinates[i] = localSpottedOffset;
-                    getSpottedCoordinates[5 - i] = inverseSpottedOffset;
-
                     getCuriousCoordinates[i] = localCuriousOffset;
-                    getCuriousCoordinates[5 - i] = inverseCuriousOffset;
-
                     sixthSenseCoordinates[i] = localSixthOffset;
-                    sixthSenseCoordinates[i + 3] = inverseSixthOffset;
             }
         }
 
@@ -105,24 +104,31 @@ public class WatchPlayer : MonoBehaviour
         Vector3 headPosition = headBone.position;
         Quaternion headRotation = headBone.rotation;
 
-        inRange = false;
-
         Vector3 playerWorldPos = _player.transform.position;
         Vector3 playerLocalToHead = Quaternion.Inverse(headRotation) * (playerWorldPos - headPosition);
 
-        if (TriangleCheck(0, playerLocalToHead) || TriangleCheck(1,playerLocalToHead))
+        if (TrapCheck(0, playerLocalToHead, getSpottedCoordinates) || TrapCheck(1,playerLocalToHead, getSpottedCoordinates))
         {
-            inRange = true;
+            debug_ai_detection = Detection.Spotted;
+        } else if (TrapCheck(0, playerLocalToHead, getCuriousCoordinates) || TrapCheck(1, playerLocalToHead, getCuriousCoordinates))
+        {
+            //debug_ai_detection = Detection.Curious;
         }
+        else
+        {
+            debug_ai_detection = Detection.Idle;
+        }
+
+        enemy_ai.SetVariableValue<Detection>("Detection", debug_ai_detection);
     }
 
     //coordinates to calculate correctly are 0 and 1, because it is reflected horizontally
-    private bool TriangleCheck(int coordinateNumber, Vector3 playerLocalToHead)
+    private bool TrapCheck(int coordinateNumber, Vector3 playerLocalToHead, Vector3[] coordinates)
     {
-        bool inVerticalRange = playerLocalToHead.z > getSpottedCoordinates[coordinateNumber].z && playerLocalToHead.z < getSpottedCoordinates[coordinateNumber+1].z;
+        bool inVerticalRange = playerLocalToHead.z > coordinates[coordinateNumber].z && playerLocalToHead.z < coordinates[coordinateNumber+1].z;
 
-        float tEdge = Mathf.InverseLerp(getSpottedCoordinates[coordinateNumber].z, getSpottedCoordinates[coordinateNumber + 1].z, playerLocalToHead.z);
-        float maxHorizontalAtZ = Mathf.Lerp(getSpottedCoordinates[coordinateNumber].x, getSpottedCoordinates[coordinateNumber + 1].x, tEdge);
+        float tEdge = Mathf.InverseLerp(coordinates[coordinateNumber].z, coordinates[coordinateNumber + 1].z, playerLocalToHead.z);
+        float maxHorizontalAtZ = Mathf.Lerp(coordinates[coordinateNumber].x, coordinates[coordinateNumber + 1].x, tEdge);
 
         return inVerticalRange && Mathf.Abs(playerLocalToHead.x) <= maxHorizontalAtZ;
     }
@@ -138,58 +144,47 @@ public class WatchPlayer : MonoBehaviour
         for (int i = 0; i < 3; i++)
         {
             Vector3 localSpottedOffset = getSpottedCoordinates[i];
-            Vector3 inverseSpottedOffset = getSpottedCoordinates[5 - i];
+            Vector3 inverseSpottedOffset = InvertCoordinates(localSpottedOffset);
 
             Vector3 localCuriousOffset = getCuriousCoordinates[i];
-            Vector3 inverseCuriousOffset = getCuriousCoordinates[5 - i];
+            Vector3 inverseCuriousOffset = InvertCoordinates(localCuriousOffset);
 
             Vector3 localSixthOffset = sixthSenseCoordinates[i];
-            Vector3 inverseSixthOffset = sixthSenseCoordinates[i + 3];
+            Vector3 inverseSixthOffset = InvertCoordinates(localSixthOffset);
 
             Gizmos.color = Color.red;
             Gizmos.DrawSphere(headPosition + (headRotation * localSpottedOffset), 0.1f);
             Gizmos.DrawSphere(headPosition + (headRotation * inverseSpottedOffset), 0.1f);
 
+            //draw spotted lines
+            DrawBorderLines(ref i, ref headPosition, ref headRotation, localSpottedOffset, getSpottedCoordinates);
+
             Gizmos.color = Color.yellow;
             Gizmos.DrawSphere(headPosition + (headRotation * localCuriousOffset), 0.1f);
             Gizmos.DrawSphere(headPosition + (headRotation * inverseCuriousOffset), 0.1f);
+
+            //draw curious lines
+            DrawBorderLines(ref i, ref headPosition, ref headRotation, localCuriousOffset, getCuriousCoordinates);
 
             if (sixthSense)
             {
                 Gizmos.color = immediateSense ? Color.red : Color.yellow;
                 Gizmos.DrawSphere(headPosition + (headRotation * localSixthOffset), 0.1f);
                 Gizmos.DrawSphere(headPosition + (headRotation * inverseSixthOffset), 0.1f);
-            }
-        }
 
-        for (int i = 0; i < 6; i++)
-        {
-            Gizmos.color = Color.red;
-            Gizmos.DrawLine(
-                headPosition + (headRotation * getSpottedCoordinates[i]),
-                headPosition + (headRotation * getSpottedCoordinates[(i + 1) % 6]));
+                Vector3 sixthSenseOrigin = headPosition + headRotation * new Vector3(0f, 0f, -sixthSenseVerticalOffset);
 
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawLine(
-                headPosition + (headRotation * getCuriousCoordinates[i]),
-                headPosition + (headRotation * getCuriousCoordinates[(i + 1) % 6]));
-        }
+                Gizmos.color = immediateSense ? Color.red : Color.yellow;
 
-        if (sixthSense)
-        {
-            Vector3 sixthSenseOrigin = headPosition + headRotation * new Vector3(0f, 0f, -sixthSenseVerticalOffset);
-
-            Gizmos.color = immediateSense ? Color.red : Color.yellow;
-
-            Gizmos.DrawLine(sixthSenseOrigin, headPosition + (headRotation * sixthSenseCoordinates[0]));
-            Gizmos.DrawLine(sixthSenseOrigin, headPosition + (headRotation * sixthSenseCoordinates[3]));
-            Gizmos.DrawLine(headPosition + (headRotation * sixthSenseCoordinates[2]), sixthSenseOrigin);
-            Gizmos.DrawLine(headPosition + (headRotation * sixthSenseCoordinates[5]), sixthSenseOrigin);
-
-            for (int i = 0; i < 2; i++)
-            {
-                Gizmos.DrawLine(headPosition + (headRotation * sixthSenseCoordinates[i]), headPosition + (headRotation * sixthSenseCoordinates[i + 1]));
-                Gizmos.DrawLine(headPosition + (headRotation * sixthSenseCoordinates[i + 3]), headPosition + (headRotation * sixthSenseCoordinates[3 + i + 1]));
+                if(i == 2)
+                {
+                    Gizmos.DrawLine(headPosition + (headRotation * localSixthOffset), headPosition + (headRotation * new Vector3(0,0,-sixthSenseVerticalOffset)));
+                    Gizmos.DrawLine(headPosition + (headRotation * inverseSixthOffset), headPosition + (headRotation * new Vector3(0, 0, -sixthSenseVerticalOffset)));
+                }
+                else
+                {
+                    DrawBorderLines(ref i, ref headPosition, ref headRotation, localSixthOffset, sixthSenseCoordinates);
+                }
             }
         }
 
@@ -197,10 +192,39 @@ public class WatchPlayer : MonoBehaviour
         DebugDrawRangeLines();
     }
 
+    private Vector3 InvertCoordinates(Vector3 input)
+    {
+        return new Vector3(-input.x, input.y, input.z);
+    }
+
+    private void DrawBorderLines(ref int i, ref Vector3 headPosition, ref Quaternion headRotation, Vector3 offset, Vector3[] coordinates)
+    {
+        switch (i)
+        {
+            case 0:
+                Gizmos.DrawLine(headPosition + (headRotation * offset), headPosition + (headRotation * InvertCoordinates(offset)));
+                Gizmos.DrawLine(headPosition + (headRotation * offset), headPosition + (headRotation * coordinates[(i + 1) % 3]));
+                Gizmos.DrawLine(headPosition + (headRotation * InvertCoordinates(offset)), headPosition + (headRotation * InvertCoordinates(coordinates[(i + 1) % 3])));
+                break;
+            case 1:
+                Gizmos.DrawLine(headPosition + (headRotation * offset), headPosition + (headRotation * coordinates[(i + 1) % 3]));
+                Gizmos.DrawLine(headPosition + (headRotation * InvertCoordinates(offset)), headPosition + (headRotation * InvertCoordinates(coordinates[(i + 1) % 3])));
+                break;
+            case 2:
+                Gizmos.DrawLine(headPosition + (headRotation * offset), headPosition + (headRotation * InvertCoordinates(offset)));
+                break;
+            default:
+                Debug.LogError("DrawBorderLines failed!");
+                break;
+        }
+    }
+
     private void DebugDrawRangeLines()
     {
-        if (inRange)
+        if (debug_ai_detection == Detection.Curious || debug_ai_detection == Detection.Spotted)
         {
+            Gizmos.color = debug_ai_detection == Detection.Spotted ? Color.red : Color.yellow;
+
             Gizmos.DrawLine(enemy.GetBoneTransform(HumanBodyBones.Head).position, _player.GetBoneTransform(HumanBodyBones.Head).position);
             Gizmos.DrawLine(enemy.GetBoneTransform(HumanBodyBones.Head).position, _player.GetBoneTransform(HumanBodyBones.LeftUpperArm).position);
             Gizmos.DrawLine(enemy.GetBoneTransform(HumanBodyBones.Head).position, _player.GetBoneTransform(HumanBodyBones.LeftLowerArm).position);
