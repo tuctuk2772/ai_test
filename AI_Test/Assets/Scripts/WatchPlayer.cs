@@ -13,8 +13,12 @@ public class WatchPlayer : MonoBehaviour
     [SerializeField] private BehaviorGraphAgent enemy_ai;
     [SerializeField] private Animator _player;
 
-    private BlackboardVariable<Detection> _detection;
-    [SerializeField] public Detection debug_ai_detection;
+    private Detection debug_ai_detection;
+
+    [Header("Memory")]
+    [SerializeField, Range(0, 10)] private float memoryDuration;
+    private bool justLostTrack = false;
+    private float currentTimeStarted;
 
     [Header("Get Spotted")]
     [SerializeField, Range(0, 2)] private float getSpottedVerticalOffset = 1f;
@@ -98,6 +102,18 @@ public class WatchPlayer : MonoBehaviour
 
     private void Update()
     {
+        //remember player position if just spotted
+        if (justLostTrack && Time.time < currentTimeStarted + memoryDuration)
+        {
+            return;
+        }
+
+        if (justLostTrack && Time.time >= currentTimeStarted + memoryDuration)
+        {
+            justLostTrack = false;
+            return;
+        }
+
         //runs only 3 times per second
         if (Time.frameCount % (20 + enemyNumber) != 0) return;
 
@@ -110,6 +126,8 @@ public class WatchPlayer : MonoBehaviour
         if (TrapCheck(0, playerLocalToHead, getSpottedCoordinates) || TrapCheck(1,playerLocalToHead, getSpottedCoordinates))
         {
             debug_ai_detection = Detection.Spotted;
+            justLostTrack = true;
+            currentTimeStarted = Time.time;
         } else if (TrapCheck(0, playerLocalToHead, getCuriousCoordinates) || TrapCheck(1, playerLocalToHead, getCuriousCoordinates))
         {
             //debug_ai_detection = Detection.Curious;

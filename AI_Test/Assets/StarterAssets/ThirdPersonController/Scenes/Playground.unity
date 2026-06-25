@@ -1264,7 +1264,7 @@ MonoBehaviour:
   enemy: {fileID: 933444076}
   enemy_ai: {fileID: 933444074}
   _player: {fileID: 1762682265}
-  debug_ai_detection: 0
+  memoryDuration: 5
   getSpottedVerticalOffset: 0.25
   getSpottedVerticalMaxDistance: 10
   getSpottedHorizontalMaxDistance: 5
@@ -5277,7 +5277,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3893294197879345259, guid: 64dce48905ffd9b4293e595fa6941544, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 11.38
+      value: 8.67
       objectReference: {fileID: 0}
     - target: {fileID: 3893294197879345259, guid: 64dce48905ffd9b4293e595fa6941544, type: 3}
       propertyPath: m_LocalRotation.w
