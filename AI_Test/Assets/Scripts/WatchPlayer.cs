@@ -13,7 +13,7 @@ public class WatchPlayer : MonoBehaviour
     [SerializeField] private BehaviorGraphAgent enemy_ai;
     [SerializeField] private Animator _player;
 
-    private Detection debug_ai_detection;
+    private Detection local_ai_detection;
 
     [Header("Memory")]
     [SerializeField, Range(0, 10)] private float memoryDuration;
@@ -125,19 +125,22 @@ public class WatchPlayer : MonoBehaviour
 
         if (TrapCheck(0, playerLocalToHead, getSpottedCoordinates) || TrapCheck(1,playerLocalToHead, getSpottedCoordinates))
         {
-            debug_ai_detection = Detection.Spotted;
+            local_ai_detection = Detection.Spotted;
             justLostTrack = true;
             currentTimeStarted = Time.time;
         } else if (TrapCheck(0, playerLocalToHead, getCuriousCoordinates) || TrapCheck(1, playerLocalToHead, getCuriousCoordinates))
         {
             //debug_ai_detection = Detection.Curious;
+        } else if (PentCheck(playerLocalToHead, sixthSenseCoordinates))
+        {
+            local_ai_detection = immediateSense ? Detection.Spotted : Detection.Curious;
         }
         else
         {
-            debug_ai_detection = Detection.Idle;
+            local_ai_detection = Detection.Idle;
         }
 
-        enemy_ai.SetVariableValue<Detection>("Detection", debug_ai_detection);
+        enemy_ai.SetVariableValue<Detection>("Detection", local_ai_detection);
     }
 
     //coordinates to calculate correctly are 0 and 1, because it is reflected horizontally
@@ -151,9 +154,27 @@ public class WatchPlayer : MonoBehaviour
         return inVerticalRange && Mathf.Abs(playerLocalToHead.x) <= maxHorizontalAtZ;
     }
 
+    private bool PentCheck(Vector3 playerLocalToHead, Vector3[] sixthCoordinates)
+    {
+        if (!sixthSense)
+        {
+            return false;
+        }
+
+        Vector3 headPosition = headBone.position;
+        Quaternion headRotation = headBone.rotation;
+        Vector3 centerBehind = headPosition + (headRotation * new Vector3(0, 0, -sixthSenseVerticalOffset));
+
+        bool inHorizontalRange = Mathf.Abs(playerLocalToHead.x) <= sixthCoordinates[0].x;
+
+        float tEdge = Mathf.InverseLerp(sixthCoordinates[2].x, centerBehind.x, Mathf.Abs(playerLocalToHead.x));
+        float maxVerticalAtZ = Mathf.Lerp(sixthCoordinates[2].z, centerBehind.z, tEdge);
+
+        return inHorizontalRange && playerLocalToHead.z >= maxVerticalAtZ && playerLocalToHead.z <= sixthCoordinates[0].z;
+    }
+
     private void OnDrawGizmos()
     {
-        Transform headBone = enemy.GetBoneTransform(HumanBodyBones.Head);
         Vector3 headPosition = headBone.position;
         Quaternion headRotation = headBone.rotation;
 
@@ -239,9 +260,9 @@ public class WatchPlayer : MonoBehaviour
 
     private void DebugDrawRangeLines()
     {
-        if (debug_ai_detection == Detection.Curious || debug_ai_detection == Detection.Spotted)
+        if (local_ai_detection == Detection.Curious || local_ai_detection == Detection.Spotted)
         {
-            Gizmos.color = debug_ai_detection == Detection.Spotted ? Color.red : Color.yellow;
+            Gizmos.color = local_ai_detection == Detection.Spotted ? Color.red : Color.yellow;
 
             Gizmos.DrawLine(enemy.GetBoneTransform(HumanBodyBones.Head).position, _player.GetBoneTransform(HumanBodyBones.Head).position);
             Gizmos.DrawLine(enemy.GetBoneTransform(HumanBodyBones.Head).position, _player.GetBoneTransform(HumanBodyBones.LeftUpperArm).position);
