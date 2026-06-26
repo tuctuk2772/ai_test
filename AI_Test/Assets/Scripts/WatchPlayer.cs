@@ -229,6 +229,17 @@ public class WatchPlayer : MonoBehaviour
 
         Gizmos.color = Color.magenta;
         DebugDrawRangeLines();
+
+        Gizmos.color = Color.black;
+
+        if (Application.isPlaying)
+        {
+            enemy_ai.GetVariable<Vector3>("LastPlayerPos", out BlackboardVariable<Vector3> lastKnownPos);
+            if (lastKnownPos != null)
+            {
+                Gizmos.DrawWireSphere(lastKnownPos.Value, 0.5f);
+            }
+        }
     }
 
     private Vector3 InvertCoordinates(Vector3 input)
