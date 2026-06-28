@@ -4,7 +4,8 @@ using Unity.Behavior;
 [BlackboardEnum]
 public enum Detection
 {
-	Idle,
-	Curious,
-	Spotted
+    Idle,
+    Curious,
+    Spotted,
+    Searching
 }

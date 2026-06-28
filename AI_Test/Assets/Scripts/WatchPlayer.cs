@@ -51,7 +51,7 @@ public class WatchPlayer : MonoBehaviour
 
     private void BuildCoordinates()
     {
-        for(int i = 0; i < 3; i++)
+        for (int i = 0; i < 3; i++)
         {
             Vector3 localSpottedOffset = Vector3.zero;
             Vector3 localCuriousOffset = Vector3.zero;
@@ -79,15 +79,15 @@ public class WatchPlayer : MonoBehaviour
                     break;
             }
 
-                    Vector3 inverseSpottedOffset = new Vector3(-localSpottedOffset.x, 0f, localSpottedOffset.z);
-                    Vector3 inverseCuriousOffset = new Vector3(-localCuriousOffset.x, 0f, localCuriousOffset.z);
-                    Vector3 inverseSixthOffset = new Vector3(-localSixthOffset.x, 0f, localSixthOffset.z);
+            Vector3 inverseSpottedOffset = new Vector3(-localSpottedOffset.x, 0f, localSpottedOffset.z);
+            Vector3 inverseCuriousOffset = new Vector3(-localCuriousOffset.x, 0f, localCuriousOffset.z);
+            Vector3 inverseSixthOffset = new Vector3(-localSixthOffset.x, 0f, localSixthOffset.z);
 
-                    getSpottedCoordinates[i] = localSpottedOffset;
-                    getCuriousCoordinates[i] = localCuriousOffset;
-                    sixthSenseCoordinates[i] = localSixthOffset;
-            }
+            getSpottedCoordinates[i] = localSpottedOffset;
+            getCuriousCoordinates[i] = localCuriousOffset;
+            sixthSenseCoordinates[i] = localSixthOffset;
         }
+    }
 
     private void Start()
     {
@@ -108,9 +108,12 @@ public class WatchPlayer : MonoBehaviour
             return;
         }
 
+        enemy_ai.GetVariable<Detection>("Detection", out BlackboardVariable<Detection> currentDetection);
+
         if (justLostTrack && Time.time >= currentTimeStarted + memoryDuration)
         {
             justLostTrack = false;
+            enemy_ai.SetVariableValue<Detection>("Detection", Detection.Searching);
             return;
         }
 
@@ -123,21 +126,23 @@ public class WatchPlayer : MonoBehaviour
         Vector3 playerWorldPos = _player.transform.position;
         Vector3 playerLocalToHead = Quaternion.Inverse(headRotation) * (playerWorldPos - headPosition);
 
-        if (TrapCheck(0, playerLocalToHead, getSpottedCoordinates) || TrapCheck(1,playerLocalToHead, getSpottedCoordinates))
+        if (TrapCheck(0, playerLocalToHead, getSpottedCoordinates) || TrapCheck(1, playerLocalToHead, getSpottedCoordinates))
         {
             local_ai_detection = Detection.Spotted;
             justLostTrack = true;
             currentTimeStarted = Time.time;
-        } else if (TrapCheck(0, playerLocalToHead, getCuriousCoordinates) || TrapCheck(1, playerLocalToHead, getCuriousCoordinates))
+        }
+        else if (TrapCheck(0, playerLocalToHead, getCuriousCoordinates) || TrapCheck(1, playerLocalToHead, getCuriousCoordinates))
         {
             //debug_ai_detection = Detection.Curious;
-        } else if (PentCheck(playerLocalToHead, sixthSenseCoordinates))
+        }
+        else if (PentCheck(playerLocalToHead, sixthSenseCoordinates))
         {
             local_ai_detection = immediateSense ? Detection.Spotted : Detection.Curious;
         }
         else
         {
-            local_ai_detection = Detection.Idle;
+            local_ai_detection = currentDetection == Detection.Searching ? Detection.Searching : Detection.Idle;
         }
 
         enemy_ai.SetVariableValue<Detection>("Detection", local_ai_detection);
@@ -146,7 +151,7 @@ public class WatchPlayer : MonoBehaviour
     //coordinates to calculate correctly are 0 and 1, because it is reflected horizontally
     private bool TrapCheck(int coordinateNumber, Vector3 playerLocalToHead, Vector3[] coordinates)
     {
-        bool inVerticalRange = playerLocalToHead.z > coordinates[coordinateNumber].z && playerLocalToHead.z < coordinates[coordinateNumber+1].z;
+        bool inVerticalRange = playerLocalToHead.z > coordinates[coordinateNumber].z && playerLocalToHead.z < coordinates[coordinateNumber + 1].z;
 
         float tEdge = Mathf.InverseLerp(coordinates[coordinateNumber].z, coordinates[coordinateNumber + 1].z, playerLocalToHead.z);
         float maxHorizontalAtZ = Mathf.Lerp(coordinates[coordinateNumber].x, coordinates[coordinateNumber + 1].x, tEdge);
@@ -215,9 +220,9 @@ public class WatchPlayer : MonoBehaviour
 
                 Gizmos.color = immediateSense ? Color.red : Color.yellow;
 
-                if(i == 2)
+                if (i == 2)
                 {
-                    Gizmos.DrawLine(headPosition + (headRotation * localSixthOffset), headPosition + (headRotation * new Vector3(0,0,-sixthSenseVerticalOffset)));
+                    Gizmos.DrawLine(headPosition + (headRotation * localSixthOffset), headPosition + (headRotation * new Vector3(0, 0, -sixthSenseVerticalOffset)));
                     Gizmos.DrawLine(headPosition + (headRotation * inverseSixthOffset), headPosition + (headRotation * new Vector3(0, 0, -sixthSenseVerticalOffset)));
                 }
                 else
