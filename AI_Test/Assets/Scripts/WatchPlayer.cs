@@ -96,6 +96,16 @@ public class WatchPlayer : MonoBehaviour
             Debug.LogError("Can't find head!");
         }
 
+        //for some reason enemy ai cannot keep Player's transform in memory, so just manually assigning it here
+        if (_player != null)
+        {
+            enemy_ai.SetVariableValue<Transform>("Player", _player.transform);
+        }
+        else
+        {
+            Debug.LogError("Player not assigned!");
+        }
+
         BuildCoordinates();
 
     }
