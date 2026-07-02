@@ -18,7 +18,7 @@ public class VisualizePatrol : MonoBehaviour
     {
         GameObject patrolPoint = new GameObject();
         patrolPoints.Add(patrolPoint);
-        patrolPoint.name = $"PatrolPoint_{patrolPoints.Count}";
+        patrolPoint.name = $"PatrolPoint_{patrolPoints.Count-1}";
         patrolPoint.transform.parent = transform;
     }
 

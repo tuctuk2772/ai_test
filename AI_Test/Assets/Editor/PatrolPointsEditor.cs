@@ -6,11 +6,14 @@ using UnityEditorInternal;
 public class PatrolPointsEditor : Editor
 {
     private ReorderableList list;
+
     private SerializedProperty enemyReference;
+    private SerializedProperty patrolType;
 
     private void OnEnable()
     {
         enemyReference = serializedObject.FindProperty("enemy");
+        patrolType = serializedObject.FindProperty("patrolPathType");
 
         SerializedProperty listProperty = serializedObject.FindProperty("patrolPoints");
         list = new ReorderableList(serializedObject, listProperty, true, true, true, true);
@@ -45,10 +48,22 @@ public class PatrolPointsEditor : Editor
             serializedObject.ApplyModifiedProperties();
         };
 
+        list.drawElementCallback = DrawElementCallback;
+        list.draggable = false;
+
         list.drawHeaderCallback += (Rect rect) =>
         {
             EditorGUI.LabelField(rect, "Patrol Points");
         };
+    }
+
+    private void DrawElementCallback(Rect rect, int index, bool isActive, bool isFocused)
+    {
+        SerializedProperty element = list.serializedProperty.GetArrayElementAtIndex(index);
+
+        rect.height = EditorGUIUtility.singleLineHeight;
+
+        EditorGUI.PropertyField(rect, element, GUIContent.none);
     }
 
     public override void OnInspectorGUI()
@@ -56,7 +71,16 @@ public class PatrolPointsEditor : Editor
         serializedObject.Update();
 
         EditorGUILayout.PropertyField(enemyReference);
-        list.DoLayoutList();
+        EditorGUILayout.PropertyField(patrolType);
+
+        EditorGUILayout.Space();
+
+        PatrolPathType currentType = (PatrolPathType)patrolType.intValue;
+
+        if(currentType == PatrolPathType.Freeform)
+        {
+            list.DoLayoutList();
+        }
         serializedObject.ApplyModifiedProperties();
     }
 }
