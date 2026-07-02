@@ -13,11 +13,21 @@ public partial class CreatePatrolAction : Action
     [SerializeReference] public BlackboardVariable<List<GameObject>> Patrols;
     protected override Status OnStart()
     {
+        if(Self.Value.transform.parent.GetComponent<VisualizePatrol>() == null)
+        {
+            Debug.LogError("Can't find visualizePatrol!");
+        }
+
         List<GameObject> patrolPoints = Self.Value.transform.parent.GetComponent<VisualizePatrol>().patrolPoints;
 
-        Patrols.Value = patrolPoints;
+        if(patrolPoints.Count == 0)
+        {
+            Debug.LogError("didn't transfer!");
+        }
 
-        Self.Value.transform.position = patrolPoints[0].transform.position;
+        Patrols.Value = new List<GameObject>(patrolPoints);
+
+        Self.Value.transform.position = Patrols.Value[0].transform.position;
 
         return Status.Running;
     }
