@@ -9,22 +9,25 @@ public class PatrolPointsEditor : Editor
 
     private SerializedProperty enemyReference;
     private SerializedProperty patrolType;
+    private SerializedProperty rectangleDimensions;
 
     private void OnEnable()
     {
         enemyReference = serializedObject.FindProperty("enemy");
         patrolType = serializedObject.FindProperty("patrolPathType");
+        rectangleDimensions = serializedObject.FindProperty("rectangleDimensions");
+
+        PatrolPathType currentType = (PatrolPathType)patrolType.intValue;
+
 
         SerializedProperty listProperty = serializedObject.FindProperty("patrolPoints");
         list = new ReorderableList(serializedObject, listProperty, true, true, true, true);
 
-        if (list.count <= 0)
+        if (list.count <= 0 && currentType == PatrolPathType.Freeform)
         {
             VisualizePatrol patrol = (VisualizePatrol)target;
-
             patrol.SpawnFreeformPatrolPoint();
-
-            serializedObject.ApplyModifiedProperties();
+            serializedObject.Update();
         }
 
         list.onAddCallback += (ReorderableList tempList) =>
@@ -33,19 +36,19 @@ public class PatrolPointsEditor : Editor
 
             patrol.SpawnFreeformPatrolPoint();
 
-            serializedObject.ApplyModifiedProperties();
+            serializedObject.Update();
         };
 
         list.onRemoveCallback += (ReorderableList tempList) =>
         {
             VisualizePatrol patrol = (VisualizePatrol)target;
 
-            if(list.count > 1)
+            if (list.count > 1)
             {
                 patrol.DestroyLastPatrolPoint();
             }
 
-            serializedObject.ApplyModifiedProperties();
+            serializedObject.Update();
         };
 
         list.drawElementCallback = DrawElementCallback;
@@ -69,18 +72,58 @@ public class PatrolPointsEditor : Editor
     public override void OnInspectorGUI()
     {
         serializedObject.Update();
-
         EditorGUILayout.PropertyField(enemyReference);
+
+        EditorGUI.BeginChangeCheck();
         EditorGUILayout.PropertyField(patrolType);
+        bool patrolTypeChanged = EditorGUI.EndChangeCheck();
 
         EditorGUILayout.Space();
 
         PatrolPathType currentType = (PatrolPathType)patrolType.intValue;
 
-        if(currentType == PatrolPathType.Freeform)
+        if (patrolTypeChanged)
         {
-            list.DoLayoutList();
+            serializedObject.ApplyModifiedProperties();
+            VisualizePatrol patrol = (VisualizePatrol)target;
+
+            if (currentType == PatrolPathType.Rectangle)
+            {
+                patrol.GenerateRectanglePoints();
+            }
+            else
+            {
+                patrol.ResetToFreeform();
+            }
+            serializedObject.Update();
         }
+
+        switch (currentType)
+        {
+            case PatrolPathType.Freeform:
+                list.DoLayoutList();
+                break;
+
+            case PatrolPathType.Rectangle:
+                EditorGUILayout.BeginVertical(GUI.skin.box);
+                EditorGUILayout.LabelField("Rectangle Dimensions", EditorStyles.boldLabel);
+
+                EditorGUI.BeginChangeCheck();
+                EditorGUILayout.PropertyField(rectangleDimensions, GUIContent.none);
+                bool dimensionsChanged = EditorGUI.EndChangeCheck();
+
+                EditorGUILayout.EndVertical();
+
+                if (dimensionsChanged)
+                {
+                    serializedObject.ApplyModifiedProperties();
+                    VisualizePatrol patrol = (VisualizePatrol)target;
+                    patrol.GenerateRectanglePoints();
+                    serializedObject.Update();
+                }
+                break;
+        }
+
         serializedObject.ApplyModifiedProperties();
     }
 }
