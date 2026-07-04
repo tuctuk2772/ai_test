@@ -16,7 +16,6 @@ public partial class AssignNamesAction : Action
     [SerializeReference] public BlackboardVariable<GameObject> Enemy;
     [SerializeReference] public BlackboardVariable<string> Name;
     [SerializeReference] public BlackboardVariable<int> Number;
-
     private static int s_EnemyCounter = 0;
     private int m_EnemyNumber = 0;
 

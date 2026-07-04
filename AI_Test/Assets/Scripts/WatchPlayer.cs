@@ -106,11 +106,20 @@ public class WatchPlayer : MonoBehaviour
             Debug.LogError("Player not assigned!");
         }
 
+        enemy_ai.SetVariableValue<List<Vector3>>("GetCuriousCoordinates", getCuriousCoordinates.ToList<Vector3>());
+        enemy_ai.SetVariableValue<List<Vector3>>("GetSpottedCoordinates", getSpottedCoordinates.ToList<Vector3>());
+        enemy_ai.SetVariableValue<List<Vector3>>("SixthSenseCoordinates", sixthSenseCoordinates.ToList<Vector3>());
+        enemy_ai.SetVariableValue<Animator>("Enemy", enemy);
+        enemy_ai.SetVariableValue<Transform>("HeadBone", headBone);
+        enemy_ai.SetVariableValue<bool>("SixthSense", sixthSense);
+        enemy_ai.SetVariableValue<bool>("ImmediateSense", immediateSense);
+        enemy_ai.SetVariableValue<float>("SixthSenseVerticalOffset", sixthSenseVerticalOffset);
+
         BuildCoordinates();
 
     }
 
-    private void Update()
+    /*private void Update()
     {
         //remember player position if just spotted
         if (justLostTrack && Time.time < currentTimeStarted + memoryDuration)
@@ -157,7 +166,7 @@ public class WatchPlayer : MonoBehaviour
 
         enemy_ai.SetVariableValue<Detection>("Detection", local_ai_detection);
     }
-
+*/
     //coordinates to calculate correctly are 0 and 1, because it is reflected horizontally
     private bool TrapCheck(int coordinateNumber, Vector3 playerLocalToHead, Vector3[] coordinates)
     {
