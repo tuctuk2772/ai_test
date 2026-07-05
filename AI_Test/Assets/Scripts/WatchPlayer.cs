@@ -261,7 +261,7 @@ public class WatchPlayer : MonoBehaviour
             enemy_ai.GetVariable<Vector3>("LastPlayerPos", out BlackboardVariable<Vector3> lastKnownPos);
             if (lastKnownPos != null)
             {
-                Gizmos.DrawWireSphere(lastKnownPos.Value, 0.5f);
+                Gizmos.DrawWireCube(lastKnownPos.Value, Vector3.one);
             }
         }
     }
