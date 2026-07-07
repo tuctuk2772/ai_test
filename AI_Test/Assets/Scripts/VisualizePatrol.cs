@@ -77,9 +77,13 @@ public class VisualizePatrol : MonoBehaviour
         patrolPoint.transform.localPosition = new Vector3(dimensions.x, 0f, dimensions.y);
         patrolPoint.name = $"PatrolPoint_{i}";
 
-        while (Physics.CheckSphere(patrolPoint.transform.position, 0.5f))
+        Physics.queriesHitBackfaces = true;
+
+        //todo - make sure overhangs work
+        while (Physics.Raycast(patrolPoint.transform.position, Vector3.up, Mathf.Infinity))
         {
-            patrolPoint.transform.position += Vector3.up;
+            Debug.Log($"{patrolPoint.name} hit!");
+            patrolPoint.transform.position += Vector3.up * 0.5f;
         }
     }
 
