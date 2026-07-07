@@ -76,6 +76,11 @@ public class VisualizePatrol : MonoBehaviour
         patrolPoint.transform.parent = transform;
         patrolPoint.transform.localPosition = new Vector3(dimensions.x, 0f, dimensions.y);
         patrolPoint.name = $"PatrolPoint_{i}";
+
+        while (Physics.CheckSphere(patrolPoint.transform.position, 0.5f))
+        {
+            patrolPoint.transform.position += Vector3.up;
+        }
     }
 
 #if UNITY_EDITOR
