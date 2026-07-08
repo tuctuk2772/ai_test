@@ -8323,22 +8323,7 @@ MonoBehaviour:
   enemy_ai: {fileID: 972718120}
   _player: {fileID: 1762682265}
   memoryDuration: 5
-  getSpottedVerticalOffset: 0
-  getSpottedVerticalMaxDistance: 10.5
-  getSpottedHorizontalMaxDistance: 5
-  getSpottedHorizontalMaxPercentage: 0.55
-  getSpottedVerticalMaxPercentage: 0.55
-  getCuriousVerticalOffset: 0
-  getCuriousVerticalMaxDistance: 13
-  getCuriousHorizontalMaxDistance: 6
-  getCuriousHorizontalMaxPercentage: 0.55
-  getCuriousVerticalMaxPercentage: 0.7
-  sixthSense: 1
-  immediateSense: 1
-  sixthSenseVerticalOffset: 0.25
-  sixthSenseHorizontal: 5
-  sixthSenseVertical: 2
-  sixthSenseAnglePercentage: 0.5
+  enemyPerceptionSettings: {fileID: 11400000, guid: edc10027cb0514f4994988a5f2c27cf5, type: 2}
 --- !u!114 &969324367
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8544,7 +8529,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::OutOfSight
   mainCamera: {fileID: 964371651}
   animator: {fileID: 972718122}
-  behaviour: {fileID: 972718122}
+  enemy_ai: {fileID: 972718120}
+  enemyPerceptionSettings: {fileID: 11400000, guid: edc10027cb0514f4994988a5f2c27cf5, type: 2}
+  halved: 0
+  ogGetCuriousPoints: []
+  ogGetSpottedPoints: []
 --- !u!1 &1028513131
 GameObject:
   m_ObjectHideFlags: 0

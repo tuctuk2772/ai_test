@@ -10,15 +10,29 @@ public class OutOfSight : MonoBehaviour
     [SerializeField] private Animator animator;
     [SerializeField] private BehaviorGraphAgent enemy_ai;
 
-    private List<Vector3> getCuriousCoordinates, getSpottedCoordinates;
+    [SerializeField] private EnemyPerceptionSettings enemyPerceptionSettings;
+
+    [SerializeField] private bool halved;
+
+    [SerializeField] Vector3[] ogGetCuriousPoints, ogGetSpottedPoints;
     
     private void Start()
     {
-        
+        ogGetCuriousPoints = enemyPerceptionSettings.getCuriousCoordinates;
+        ogGetSpottedPoints = enemyPerceptionSettings.getSpottedCoordinates;
     }
 
     private void Update()
     {
+        if (halved)
+        {
+            
+        }
+        else
+        {
+
+        }
+
         animator.enabled = isBehind();
     }
 
