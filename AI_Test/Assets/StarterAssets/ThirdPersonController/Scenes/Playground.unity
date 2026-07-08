@@ -8432,6 +8432,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 8e4cab1e5983c4e46b428ed004262aaa, type: 3}
       insertIndex: -1
       addedObject: {fileID: 972718121}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 8e4cab1e5983c4e46b428ed004262aaa, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 972718123}
   m_SourcePrefab: {fileID: 100100000, guid: 8e4cab1e5983c4e46b428ed004262aaa, type: 3}
 --- !u!4 &972718118 stripped
 Transform:
@@ -8527,6 +8530,21 @@ Animator:
   m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: 8e4cab1e5983c4e46b428ed004262aaa, type: 3}
   m_PrefabInstance: {fileID: 972718117}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &972718123
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 972718119}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 12389106780595148a42519180ec66e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OutOfSight
+  mainCamera: {fileID: 964371651}
+  animator: {fileID: 972718122}
+  behaviour: {fileID: 972718122}
 --- !u!1 &1028513131
 GameObject:
   m_ObjectHideFlags: 0
