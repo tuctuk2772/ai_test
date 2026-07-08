@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Drawing;
 using UnityEngine;
 
 [System.Serializable]
@@ -83,7 +82,7 @@ public class VisualizePatrol : MonoBehaviour
         while (Physics.Raycast(patrolPoint.transform.position, Vector3.up, Mathf.Infinity))
         {
             Debug.Log($"{patrolPoint.name} hit!");
-            patrolPoint.transform.position += Vector3.up * 0.5f;
+            patrolPoint.transform.position += Vector3.up * 0.15f;
         }
     }
 
@@ -102,7 +101,12 @@ public class VisualizePatrol : MonoBehaviour
                 enemy.transform.position = patrolPoints[i].transform.position;
             }
 
-            Gizmos.DrawWireSphere(patrolPoints[i].transform.position, 0.5f);
+            Gizmos.color = Color.green;
+
+            Gizmos.matrix = Matrix4x4.TRS(patrolPoints[i].transform.position, transform.rotation, new Vector3(1f, 0f, 1f));
+            Gizmos.DrawWireSphere(Vector3.zero, 0.5f);
+
+            Gizmos.matrix = Matrix4x4.identity;
             Gizmos.DrawLine(patrolPoints[i].transform.position, patrolPoints[(i + 1) % patrolPoints.Count].transform.position);
         }
     }

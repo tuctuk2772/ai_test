@@ -91,6 +91,8 @@ public partial class LookAroundAction : Action
         return inHorizontalRange && playerLocalToHead.z >= maxVerticalAtZ && playerLocalToHead.z <= sixthCoordinates[0].z;
     }
 
+
+
     protected override void OnEnd()
     {
 

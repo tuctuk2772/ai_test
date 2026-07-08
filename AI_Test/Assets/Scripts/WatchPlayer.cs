@@ -100,6 +100,7 @@ public class WatchPlayer : MonoBehaviour
         if (_player != null)
         {
             enemy_ai.SetVariableValue<Transform>("Player", _player.transform);
+            enemy_ai.SetVariableValue<Animator>("PlayerAnimator", _player);
         }
         else
         {
