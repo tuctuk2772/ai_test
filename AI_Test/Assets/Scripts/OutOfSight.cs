@@ -24,16 +24,35 @@ public class OutOfSight : MonoBehaviour
 
     private void Update()
     {
-        if (halved)
-        {
-            
-        }
-        else
-        {
+        animator.enabled = isVisible();
+        Debug_AssignUpdatedCoordinates(isBehind() ? 1f : 2f);
+    }
 
+    private void Debug_AssignUpdatedCoordinates(float dividedFactor)
+    {
+        Vector3[] newGetCuriousPoints = new Vector3[3], newGetSpottedPoints = new Vector3[3];
+
+        for(int i = 0; i < ogGetCuriousPoints.Length; i++)
+        {
+            newGetCuriousPoints[i] = ogGetCuriousPoints[i] / dividedFactor;
         }
 
-        animator.enabled = isBehind();
+        for (int i = 0; i < ogGetSpottedPoints.Length; i++)
+        {
+            newGetSpottedPoints[i] = ogGetSpottedPoints[i] / dividedFactor;
+        }
+
+        enemyPerceptionSettings.getCuriousCoordinates = newGetCuriousPoints;
+        enemyPerceptionSettings.getSpottedCoordinates = newGetSpottedPoints;
+
+        enemy_ai.SetVariableValue<List<Vector3>>("GetSpottedCoordinates", newGetSpottedPoints.ToList<Vector3>());
+        enemy_ai.SetVariableValue<List<Vector3>>("GetCuriousCoordinates", newGetCuriousPoints.ToList<Vector3>());
+    }
+
+    private void OnDisable()
+    {
+        enemyPerceptionSettings.getCuriousCoordinates = ogGetCuriousPoints;
+        enemyPerceptionSettings.getSpottedCoordinates = ogGetSpottedPoints;
     }
 
     private bool isVisible()
