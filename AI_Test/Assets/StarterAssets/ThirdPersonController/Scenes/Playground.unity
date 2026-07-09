@@ -8446,7 +8446,7 @@ MonoBehaviour:
   m_Graph: {fileID: -4889546364304998784, guid: 6a537d9afcc8ed14c9ec7144d10066a3, type: 2}
   m_BlackboardVariableOverridesList:
   - rid: 3431466171362181120
-  - rid: 3431466171362181121
+  - rid: 5540315073713275198
   - rid: 3431466172125282614
   - rid: 5540315027621282044
   m_OriginalGraph: {fileID: 0}
@@ -8463,15 +8463,6 @@ MonoBehaviour:
           m_Value1: 0
         Name: Self
         m_Value: {fileID: 972718119}
-    - rid: 3431466171362181121
-      type: {class: 'SharedBlackboardVariable`1[[UnityEngine.Transform, UnityEngine.CoreModule]]', ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        GUID:
-          m_Value0: 17100135880316737035
-          m_Value1: 18149609199526130720
-        Name: Player
-        m_Value: {fileID: 0}
-        m_SharedVariablesRuntimeAsset: {fileID: 1140775093984687733, guid: 6a537d9afcc8ed14c9ec7144d10066a3, type: 2}
     - rid: 3431466172125282614
       type: {class: 'BlackboardVariable`1[[System.Collections.Generic.List`1[[UnityEngine.GameObject, UnityEngine.CoreModule]], mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
       data:
@@ -8488,6 +8479,14 @@ MonoBehaviour:
           m_Value1: 6136449481624884068
         Name: PlayerAnimator
         m_Value: {fileID: 1762682265}
+    - rid: 5540315073713275198
+      type: {class: 'BlackboardVariable`1[[UnityEngine.Transform, UnityEngine.CoreModule]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 3124487725381735009
+          m_Value1: 13987041635688610373
+        Name: Player
+        m_Value: {fileID: 1762682261}
 --- !u!195 &972718121
 NavMeshAgent:
   m_ObjectHideFlags: 0

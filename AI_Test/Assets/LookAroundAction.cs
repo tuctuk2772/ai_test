@@ -30,7 +30,7 @@ public partial class LookAroundAction : Action
 
     protected override Status OnUpdate()
     {
-        if (Time.frameCount % (20 + EnemyNumber.Value) != 0)
+        /*if (Time.frameCount % (20 + EnemyNumber.Value) != 0)
         {
             return Status.Running;
         }
@@ -57,6 +57,8 @@ public partial class LookAroundAction : Action
         {
             CurrentDetection.Value = CurrentDetection.Value == Detection.Searching ? Detection.Searching : Detection.Idle;
         }
+
+        return Status.Running;*/
 
         return Status.Running;
     }

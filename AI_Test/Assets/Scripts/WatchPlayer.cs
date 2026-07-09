@@ -40,7 +40,7 @@ public class WatchPlayer : MonoBehaviour
         //for some reason enemy ai cannot keep Player's transform in memory, so just manually assigning it here
         if (_player != null)
         {
-            enemy_ai.SetVariableValue<Transform>("Player", _player.transform);
+            //enemy_ai.SetVariableValue<Transform>("Player", _player.transform);
             enemy_ai.SetVariableValue<Animator>("PlayerAnimator", _player);
         }
         else
@@ -138,7 +138,7 @@ public class WatchPlayer : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if(ai == null)
+        if (ai == null)
         {
             return;
         }
