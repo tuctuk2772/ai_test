@@ -15,8 +15,6 @@ public class WatchPlayer : MonoBehaviour
     [SerializeField] private BehaviorGraphAgent enemy_ai;
     [SerializeField] private Animator _player;
 
-    private Detection local_ai_detection;
-
     [Header("Memory")]
     [SerializeField, Range(0, 10)] private float memoryDuration;
     private bool justLostTrack = false;
@@ -40,7 +38,7 @@ public class WatchPlayer : MonoBehaviour
         //for some reason enemy ai cannot keep Player's transform in memory, so just manually assigning it here
         if (_player != null)
         {
-            //enemy_ai.SetVariableValue<Transform>("Player", _player.transform);
+            enemy_ai.SetVariableValue<Transform>("Player", _player.transform);
             enemy_ai.SetVariableValue<Animator>("PlayerAnimator", _player);
         }
         else
@@ -57,85 +55,6 @@ public class WatchPlayer : MonoBehaviour
         enemy_ai.SetVariableValue<bool>("ImmediateSense", ai.immediateSense);
         enemy_ai.SetVariableValue<float>("SixthSenseVerticalOffset", ai.sixthSenseVerticalOffset);
     }
-
-    /*private void Update()
-    {
-        //remember player position if just spotted
-        if (justLostTrack && Time.time < currentTimeStarted + memoryDuration)
-        {
-            return;
-        }
-
-        enemy_ai.GetVariable<Detection>("Detection", out BlackboardVariable<Detection> currentDetection);
-
-        if (justLostTrack && Time.time >= currentTimeStarted + memoryDuration)
-        {
-            justLostTrack = false;
-            enemy_ai.SetVariableValue<Detection>("Detection", Detection.Searching);
-            return;
-        }
-
-        //runs only 3 times per second
-        if (Time.frameCount % (20 + enemyNumber) != 0) return;
-
-        Vector3 headPosition = headBone.position;
-        Quaternion headRotation = headBone.rotation;
-
-        Vector3 playerWorldPos = _player.transform.position;
-        Vector3 playerLocalToHead = Quaternion.Inverse(headRotation) * (playerWorldPos - headPosition);
-
-        if (TrapCheck(0, playerLocalToHead, getSpottedCoordinates) || TrapCheck(1, playerLocalToHead, getSpottedCoordinates))
-        {
-            local_ai_detection = Detection.Spotted;
-            justLostTrack = true;
-            currentTimeStarted = Time.time;
-        }
-        else if (TrapCheck(0, playerLocalToHead, getCuriousCoordinates) || TrapCheck(1, playerLocalToHead, getCuriousCoordinates))
-        {
-            //debug_ai_detection = Detection.Curious;
-        }
-        else if (PentCheck(playerLocalToHead, sixthSenseCoordinates))
-        {
-            local_ai_detection = immediateSense ? Detection.Spotted : Detection.Curious;
-        }
-        else
-        {
-            local_ai_detection = currentDetection == Detection.Searching ? Detection.Searching : Detection.Idle;
-        }
-
-        enemy_ai.SetVariableValue<Detection>("Detection", local_ai_detection);
-    }
-*/
-    //coordinates to calculate correctly are 0 and 1, because it is reflected horizontally
-    private bool TrapCheck(int coordinateNumber, Vector3 playerLocalToHead, Vector3[] coordinates)
-    {
-        bool inVerticalRange = playerLocalToHead.z > coordinates[coordinateNumber].z && playerLocalToHead.z < coordinates[coordinateNumber + 1].z;
-
-        float tEdge = Mathf.InverseLerp(coordinates[coordinateNumber].z, coordinates[coordinateNumber + 1].z, playerLocalToHead.z);
-        float maxHorizontalAtZ = Mathf.Lerp(coordinates[coordinateNumber].x, coordinates[coordinateNumber + 1].x, tEdge);
-
-        return inVerticalRange && Mathf.Abs(playerLocalToHead.x) <= maxHorizontalAtZ;
-    }
-
-    private bool PentCheck(Vector3 playerLocalToHead, Vector3[] sixthCoordinates)
-    {
-        if (!ai.sixthSense)
-        {
-            return false;
-        }
-
-        Vector3 headPosition = headBone.position;
-        Quaternion headRotation = headBone.rotation;
-        Vector3 centerBehind = headPosition + (headRotation * new Vector3(0, 0, -ai.sixthSenseVerticalOffset));
-
-        bool inHorizontalRange = Mathf.Abs(playerLocalToHead.x) <= sixthCoordinates[0].x;
-
-        float tEdge = Mathf.InverseLerp(sixthCoordinates[2].x, centerBehind.x, Mathf.Abs(playerLocalToHead.x));
-        float maxVerticalAtZ = Mathf.Lerp(sixthCoordinates[2].z, centerBehind.z, tEdge);
-
-        return inHorizontalRange && playerLocalToHead.z >= maxVerticalAtZ && playerLocalToHead.z <= sixthCoordinates[0].z;
-    }
-
     private void OnDrawGizmos()
     {
         if (ai == null)
@@ -237,20 +156,15 @@ public class WatchPlayer : MonoBehaviour
 
     private void DebugDrawRangeLines()
     {
-        if (local_ai_detection == Detection.Curious || local_ai_detection == Detection.Spotted)
-        {
-            Gizmos.color = local_ai_detection == Detection.Spotted ? Color.red : Color.yellow;
-
-            Gizmos.DrawLine(enemy.GetBoneTransform(HumanBodyBones.Head).position, _player.GetBoneTransform(HumanBodyBones.Head).position);
-            Gizmos.DrawLine(enemy.GetBoneTransform(HumanBodyBones.Head).position, _player.GetBoneTransform(HumanBodyBones.LeftUpperArm).position);
-            Gizmos.DrawLine(enemy.GetBoneTransform(HumanBodyBones.Head).position, _player.GetBoneTransform(HumanBodyBones.LeftLowerArm).position);
-            Gizmos.DrawLine(enemy.GetBoneTransform(HumanBodyBones.Head).position, _player.GetBoneTransform(HumanBodyBones.RightUpperArm).position);
-            Gizmos.DrawLine(enemy.GetBoneTransform(HumanBodyBones.Head).position, _player.GetBoneTransform(HumanBodyBones.RightLowerArm).position);
-            Gizmos.DrawLine(enemy.GetBoneTransform(HumanBodyBones.Head).position, _player.GetBoneTransform(HumanBodyBones.Chest).position);
-            Gizmos.DrawLine(enemy.GetBoneTransform(HumanBodyBones.Head).position, _player.GetBoneTransform(HumanBodyBones.LeftUpperLeg).position);
-            Gizmos.DrawLine(enemy.GetBoneTransform(HumanBodyBones.Head).position, _player.GetBoneTransform(HumanBodyBones.LeftLowerLeg).position);
-            Gizmos.DrawLine(enemy.GetBoneTransform(HumanBodyBones.Head).position, _player.GetBoneTransform(HumanBodyBones.RightUpperLeg).position);
-            Gizmos.DrawLine(enemy.GetBoneTransform(HumanBodyBones.Head).position, _player.GetBoneTransform(HumanBodyBones.RightLowerLeg).position);
-        }
+        Gizmos.DrawLine(enemy.GetBoneTransform(HumanBodyBones.Head).position, _player.GetBoneTransform(HumanBodyBones.Head).position);
+        Gizmos.DrawLine(enemy.GetBoneTransform(HumanBodyBones.Head).position, _player.GetBoneTransform(HumanBodyBones.LeftUpperArm).position);
+        Gizmos.DrawLine(enemy.GetBoneTransform(HumanBodyBones.Head).position, _player.GetBoneTransform(HumanBodyBones.LeftLowerArm).position);
+        Gizmos.DrawLine(enemy.GetBoneTransform(HumanBodyBones.Head).position, _player.GetBoneTransform(HumanBodyBones.RightUpperArm).position);
+        Gizmos.DrawLine(enemy.GetBoneTransform(HumanBodyBones.Head).position, _player.GetBoneTransform(HumanBodyBones.RightLowerArm).position);
+        Gizmos.DrawLine(enemy.GetBoneTransform(HumanBodyBones.Head).position, _player.GetBoneTransform(HumanBodyBones.Chest).position);
+        Gizmos.DrawLine(enemy.GetBoneTransform(HumanBodyBones.Head).position, _player.GetBoneTransform(HumanBodyBones.LeftUpperLeg).position);
+        Gizmos.DrawLine(enemy.GetBoneTransform(HumanBodyBones.Head).position, _player.GetBoneTransform(HumanBodyBones.LeftLowerLeg).position);
+        Gizmos.DrawLine(enemy.GetBoneTransform(HumanBodyBones.Head).position, _player.GetBoneTransform(HumanBodyBones.RightUpperLeg).position);
+        Gizmos.DrawLine(enemy.GetBoneTransform(HumanBodyBones.Head).position, _player.GetBoneTransform(HumanBodyBones.RightLowerLeg).position);
     }
 }

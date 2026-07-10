@@ -11,6 +11,7 @@ public partial class LookAroundAction : Action
 {
     [SerializeReference] public BlackboardVariable<GameObject> Agent;
     [SerializeReference] public BlackboardVariable<Transform> Player;
+    [SerializeReference] public BlackboardVariable<Animator> Player_Animator;
     [SerializeReference] public BlackboardVariable<Detection> CurrentDetection;
     [SerializeReference] public BlackboardVariable<Int32> EnemyNumber;
 
@@ -30,8 +31,14 @@ public partial class LookAroundAction : Action
 
     protected override Status OnUpdate()
     {
-        /*if (Time.frameCount % (20 + EnemyNumber.Value) != 0)
+        if (Time.frameCount % (20 + EnemyNumber.Value) != 0)
         {
+            return Status.Running;
+        }
+
+        if (Player.Value == null)
+        {
+            Debug.LogError("Player not assigned!");
             return Status.Running;
         }
 
@@ -43,22 +50,33 @@ public partial class LookAroundAction : Action
 
         if (TrapCheck(0, playerLocalToHead, GetSpottedCoordinates.Value) || TrapCheck(1, playerLocalToHead, GetSpottedCoordinates.Value))
         {
-            CurrentDetection.Value = Detection.Spotted;
+            if (CheckIfClearSight())
+            {
+                CurrentDetection.Value = Detection.Spotted;
+            }
         }
         else if (TrapCheck(0, playerLocalToHead, GetCuriousCoordinates.Value) || TrapCheck(1, playerLocalToHead, GetCuriousCoordinates.Value))
         {
-            CurrentDetection.Value = Detection.Curious;
+            if (CheckIfClearSight())
+            {
+
+                CurrentDetection.Value = Detection.Curious;
+            }
         }
         else if (PentCheck(playerLocalToHead, SixthSenseCoordinates.Value))
         {
-            CurrentDetection.Value = ImmediateSense.Value ? Detection.Spotted : Detection.Curious;
+            if (CheckIfClearSight())
+            {
+                CurrentDetection.Value = ImmediateSense.Value ? Detection.Spotted : Detection.Curious;
+            }
         }
         else
         {
-            CurrentDetection.Value = CurrentDetection.Value == Detection.Searching ? Detection.Searching : Detection.Idle;
+            if (CheckIfClearSight())
+            {
+                CurrentDetection.Value = CurrentDetection.Value == Detection.Searching ? Detection.Searching : Detection.Idle;
+            }
         }
-
-        return Status.Running;*/
 
         return Status.Running;
     }
@@ -93,7 +111,34 @@ public partial class LookAroundAction : Action
         return inHorizontalRange && playerLocalToHead.z >= maxVerticalAtZ && playerLocalToHead.z <= sixthCoordinates[0].z;
     }
 
+    private bool CheckIfClearSight()
+    {
+        Vector3 origin = HeadBone.Value.position;
+        Vector3 targetPos = Player_Animator.Value.GetBoneTransform(HumanBodyBones.Head).position;
 
+        Vector3 direction = targetPos - origin;
+
+        float distance = direction.magnitude;
+        direction.Normalize();
+
+        float horizontalDistance = new Vector2(direction.x, direction.z).magnitude;
+        float verticalAngle = Mathf.Atan2(direction.y, horizontalDistance) * Mathf.Rad2Deg;
+
+        //eye line
+        if (Mathf.Abs(verticalAngle) > 3f)
+        {
+            return false;
+        }
+
+        int playerLayer = LayerMask.NameToLayer("Player");
+
+        if (Physics.Raycast(origin, direction, out RaycastHit hit, distance))
+        {
+            return hit.collider.gameObject.layer == playerLayer ? true : false;
+        }
+
+        return false;
+    }
 
     protected override void OnEnd()
     {
