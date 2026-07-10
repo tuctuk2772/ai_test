@@ -114,7 +114,31 @@ public partial class LookAroundAction : Action
     private bool CheckIfClearSight()
     {
         Vector3 origin = HeadBone.Value.position;
+
+        //priority for specific body parts
+
+        Vector3[] targets = new Vector3[]
+        {
+            Player_Animator.Value.GetBoneTransform(HumanBodyBones.Head).position,
+            Player_Animator.Value.GetBoneTransform(HumanBodyBones.LeftUpperArm).position,
+            Player_Animator.Value.GetBoneTransform(HumanBodyBones.LeftLowerArm).position,
+            Player_Animator.Value.GetBoneTransform(HumanBodyBones.RightUpperArm).position,
+            Player_Animator.Value.GetBoneTransform(HumanBodyBones.RightLowerArm).position,
+            Player_Animator.Value.GetBoneTransform(HumanBodyBones.Chest).position,
+            Player_Animator.Value.GetBoneTransform(HumanBodyBones.LeftUpperLeg).position,
+            Player_Animator.Value.GetBoneTransform(HumanBodyBones.LeftLowerLeg).position,
+            Player_Animator.Value.GetBoneTransform(HumanBodyBones.RightUpperLeg).position,
+            Player_Animator.Value.GetBoneTransform(HumanBodyBones.RightLowerLeg).position,
+        };
+
         Vector3 targetPos = Player_Animator.Value.GetBoneTransform(HumanBodyBones.Head).position;
+
+        Vector3[] directions = new Vector3[9];
+
+        for(int i = 0; i < targets.Length; i++)
+        {
+            directions[i] = targets[i] - origin;
+        }
 
         Vector3 direction = targetPos - origin;
 
