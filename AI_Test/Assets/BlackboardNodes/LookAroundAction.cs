@@ -9,6 +9,8 @@ using System.Collections.Generic;
 [NodeDescription(name: "Look Around", story: "Check if [agent] can see [player]", category: "Action/Find", id: "c9a9c2e49deb770d66f2ce9445b8f598")]
 public partial class LookAroundAction : Action
 {
+    //note - this can be optimized further, i want to eventually have one raycast per frame as opposed to overloading with 10 raycasts, like Splinter Cell Blacklist
+
     [SerializeReference] public BlackboardVariable<GameObject> Agent;
     [SerializeReference] public BlackboardVariable<Transform> Player;
     [SerializeReference] public BlackboardVariable<Animator> Player_Animator;
@@ -24,8 +26,11 @@ public partial class LookAroundAction : Action
     [SerializeReference] public BlackboardVariable<bool> SixthSense, ImmediateSense;
     [SerializeReference] public BlackboardVariable<float> SixthSenseVerticalOffset;
 
+    private int playerLayer;
+
     protected override Status OnStart()
     {
+        playerLayer = LayerMask.NameToLayer("Player");
         return Status.Running;
     }
 
@@ -111,57 +116,77 @@ public partial class LookAroundAction : Action
         return inHorizontalRange && playerLocalToHead.z >= maxVerticalAtZ && playerLocalToHead.z <= sixthCoordinates[0].z;
     }
 
+    private struct Body
+    {
+        public Vector3 bonePosition;
+        public float distance;
+
+        public Vector3 direction;
+        public float verticalAngle;
+        public int seenValue;
+    }
+
+    private Body CreateBody(ref Vector3 origin, HumanBodyBones bone, int value)
+    {
+        Vector3 bonePosition = Player_Animator.Value.GetBoneTransform(bone).position;
+        Vector3 direction = bonePosition - origin;
+        float distance = direction.magnitude;
+        direction.Normalize();
+
+        float horizontalDistance = new Vector2(direction.x, direction.z).magnitude;
+
+        return new Body
+        {
+            bonePosition = bonePosition,
+            seenValue = value,
+
+            direction = direction,
+            distance = distance,
+            verticalAngle = Mathf.Atan2(direction.y, horizontalDistance) * Mathf.Rad2Deg
+        };
+    }
+
     private bool CheckIfClearSight()
     {
         Vector3 origin = HeadBone.Value.position;
 
         //priority for specific body parts
-
-        Vector3[] targets = new Vector3[]
+        Body[] targets = new Body[]
         {
-            Player_Animator.Value.GetBoneTransform(HumanBodyBones.Head).position,
-            Player_Animator.Value.GetBoneTransform(HumanBodyBones.LeftUpperArm).position,
-            Player_Animator.Value.GetBoneTransform(HumanBodyBones.LeftLowerArm).position,
-            Player_Animator.Value.GetBoneTransform(HumanBodyBones.RightUpperArm).position,
-            Player_Animator.Value.GetBoneTransform(HumanBodyBones.RightLowerArm).position,
-            Player_Animator.Value.GetBoneTransform(HumanBodyBones.Chest).position,
-            Player_Animator.Value.GetBoneTransform(HumanBodyBones.LeftUpperLeg).position,
-            Player_Animator.Value.GetBoneTransform(HumanBodyBones.LeftLowerLeg).position,
-            Player_Animator.Value.GetBoneTransform(HumanBodyBones.RightUpperLeg).position,
-            Player_Animator.Value.GetBoneTransform(HumanBodyBones.RightLowerLeg).position,
+            CreateBody(ref origin, HumanBodyBones.Head, 3),
+            CreateBody(ref origin, HumanBodyBones.LeftUpperArm, 2),
+            CreateBody(ref origin, HumanBodyBones.LeftLowerArm, 1),
+            CreateBody(ref origin, HumanBodyBones.RightUpperArm, 2),
+            CreateBody(ref origin, HumanBodyBones.RightLowerArm, 1),
+            CreateBody(ref origin, HumanBodyBones.Chest, 3),
+            CreateBody(ref origin, HumanBodyBones.LeftUpperLeg, 2),
+            CreateBody(ref origin, HumanBodyBones.LeftLowerLeg, 1),
+            CreateBody(ref origin, HumanBodyBones.RightUpperLeg, 2),
+            CreateBody(ref origin, HumanBodyBones.RightLowerLeg, 1),
         };
 
-        Vector3 targetPos = Player_Animator.Value.GetBoneTransform(HumanBodyBones.Head).position;
+        //how do you do this one raycast frame by frame?
 
-        Vector3[] directions = new Vector3[9];
+        float visibilityValue = 0;
 
-        for(int i = 0; i < targets.Length; i++)
+        for (int i = 0; i < targets.Length; i++)
         {
-            directions[i] = targets[i] - origin;
+            Body targetBone = targets[i];
+
+            if (Mathf.Abs(targetBone.verticalAngle) > 4f)
+            {
+                continue;
+            }
+
+            if (Physics.Raycast(origin, targetBone.direction, out RaycastHit hit, targetBone.distance))
+            {
+                visibilityValue += hit.collider.gameObject.layer == playerLayer ? targetBone.seenValue : 0;
+            }
         }
 
-        Vector3 direction = targetPos - origin;
+        Debug.Log(visibilityValue);
 
-        float distance = direction.magnitude;
-        direction.Normalize();
-
-        float horizontalDistance = new Vector2(direction.x, direction.z).magnitude;
-        float verticalAngle = Mathf.Atan2(direction.y, horizontalDistance) * Mathf.Rad2Deg;
-
-        //eye line
-        if (Mathf.Abs(verticalAngle) > 3f)
-        {
-            return false;
-        }
-
-        int playerLayer = LayerMask.NameToLayer("Player");
-
-        if (Physics.Raycast(origin, direction, out RaycastHit hit, distance))
-        {
-            return hit.collider.gameObject.layer == playerLayer ? true : false;
-        }
-
-        return false;
+        return visibilityValue > 5 ? true : false;
     }
 
     protected override void OnEnd()

@@ -12,10 +12,8 @@ public class OutOfSight : MonoBehaviour
 
     [SerializeField] private EnemyPerceptionSettings enemyPerceptionSettings;
 
-    [SerializeField] private bool halved;
+    Vector3[] ogGetCuriousPoints, ogGetSpottedPoints;
 
-    [SerializeField] Vector3[] ogGetCuriousPoints, ogGetSpottedPoints;
-    
     private void Start()
     {
         ogGetCuriousPoints = enemyPerceptionSettings.getCuriousCoordinates;
@@ -32,7 +30,7 @@ public class OutOfSight : MonoBehaviour
     {
         Vector3[] newGetCuriousPoints = new Vector3[3], newGetSpottedPoints = new Vector3[3];
 
-        for(int i = 0; i < ogGetCuriousPoints.Length; i++)
+        for (int i = 0; i < ogGetCuriousPoints.Length; i++)
         {
             newGetCuriousPoints[i] = ogGetCuriousPoints[i] / dividedFactor;
         }
@@ -59,7 +57,7 @@ public class OutOfSight : MonoBehaviour
     {
         Plane[] planes = GeometryUtility.CalculateFrustumPlanes(mainCamera);
 
-        return planes.All(plane => plane.GetDistanceToPoint(transform.position)>=0);
+        return planes.All(plane => plane.GetDistanceToPoint(transform.position) >= 0);
     }
 
     private bool isBehind()
@@ -78,7 +76,7 @@ public class OutOfSight : MonoBehaviour
             invertedPlanes[i] = new Plane(-planes[i].normal, -planes[i].distance);
         }
 
-        foreach(Plane plane in invertedPlanes)
+        foreach (Plane plane in invertedPlanes)
         {
             Gizmos.color = Color.blue;
             Gizmos.DrawLine(plane.normal, Vector3.zero);
