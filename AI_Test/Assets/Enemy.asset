@@ -4463,7 +4463,7 @@ MonoBehaviour:
   - rid: 5540314957328941909
   - rid: 5540315186889490502
   - rid: 6453772971085135940
-  m_VersionTimestamp: 639197206933360350
+  m_VersionTimestamp: 639197222728774975
   m_CommandBuffer:
     m_Commands: []
   m_RuntimeBlackboardAsset: {fileID: 1140775093984687733}
@@ -4647,7 +4647,7 @@ MonoBehaviour:
           m_Value0: 5333552652581002071
           m_Value1: 2703109912389591380
         Name: SuspicionMeterVisual
-        IsExposed: 1
+        IsExposed: 0
         m_IsShared: 0
         m_Value: 0
 --- !u!114 &6025086718115213368

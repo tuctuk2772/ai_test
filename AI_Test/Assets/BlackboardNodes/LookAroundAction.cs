@@ -219,7 +219,12 @@ public partial class LookAroundAction : Action
         }
         else
         {
-            currentSuspicionMeter = 0;
+            //suspicion currently snaps back down
+            if(currentSuspicionMeter > 0)
+            {
+                currentSuspicionMeter -= 0.25f * Time.deltaTime;
+                suspicionMeterVisual.Value -= currentSuspicionMeter;
+            }
             return false;
         }
 
@@ -227,8 +232,7 @@ public partial class LookAroundAction : Action
 
         if (outcomeDetection == Detection.Spotted)
         {
-            float distanceRatio = 
-                averageDistance > 0f ? Mathf.Clamp01(averageDistance / GetCuriousCoordinates.Value[2].z) : 0f;
+            float distanceRatio = Mathf.Clamp01(averageDistance / GetCuriousCoordinates.Value[2].z);
 
             detectionSuspicionMeter = distanceRatio * 0.75f * suspicionMeterMax.Value;
         }
@@ -236,7 +240,6 @@ public partial class LookAroundAction : Action
         suspicionMeterVisual.Value = Mathf.Clamp01(currentSuspicionMeter/detectionSuspicionMeter);
 
         return currentSuspicionMeter >= detectionSuspicionMeter;
-        //return visibilityValue > 5 ? true : false;
     }
 
     protected override void OnEnd()

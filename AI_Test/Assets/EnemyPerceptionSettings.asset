@@ -23,7 +23,7 @@ MonoBehaviour:
   getCuriousHorizontalMaxPercentage: 0.55
   getCuriousVerticalMaxPercentage: 0.7
   sixthSense: 1
-  immediateSense: 1
+  immediateSense: 0
   sixthSenseVerticalOffset: 0.25
   sixthSenseHorizontal: 5
   sixthSenseVertical: 2
