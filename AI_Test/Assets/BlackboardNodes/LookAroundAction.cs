@@ -189,7 +189,16 @@ public partial class LookAroundAction : Action
 
         suspicionGrowing = visibilityValue > 5 ? true : false;
 
-        return false;
+        if (suspicionGrowing)
+        {
+            currentSuspicionMeter += Time.deltaTime;
+        }
+        else
+        {
+            currentSuspicionMeter = 0;
+        }
+
+        return currentSuspicionMeter >= suspicionMeterMax.Value;
         //return visibilityValue > 5 ? true : false;
     }
 
