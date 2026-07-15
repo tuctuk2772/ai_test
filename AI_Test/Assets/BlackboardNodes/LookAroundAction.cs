@@ -27,11 +27,40 @@ public partial class LookAroundAction : Action
     [SerializeReference] public BlackboardVariable<float> SixthSenseVerticalOffset;
 
     [SerializeReference] public BlackboardVariable<float> suspicionMeterMax;
+    [SerializeReference] public BlackboardVariable<float> suspicionMeterVisual;
 
     private int playerLayer;
     private float currentSuspicionMeter = 0f;
 
     private bool suspicionGrowing = false;
+
+    private struct DetectionZone
+    {
+        public Detection detectionOutcome;
+        public Func<Vector3, bool> InZone;
+    }
+
+    private List<DetectionZone> ZonePriorities()
+    {
+        return new List<DetectionZone>()
+        {
+            new DetectionZone
+        {
+            detectionOutcome = Detection.Spotted,
+            InZone = pos => TrapCheck(0, pos, GetSpottedCoordinates.Value) || TrapCheck(1, pos, GetSpottedCoordinates.Value)
+        },
+        new DetectionZone
+        {
+            detectionOutcome = Detection.Curious,
+            InZone = pos => TrapCheck(0, pos, GetCuriousCoordinates.Value) || TrapCheck(1, pos, GetCuriousCoordinates.Value)
+        },
+        new DetectionZone
+        {
+            detectionOutcome = ImmediateSense.Value ? Detection.Spotted : Detection.Curious,
+            InZone = pos => PentCheck(pos, SixthSenseCoordinates.Value)
+        }
+        };
+    }
 
     protected override Status OnStart()
     {
@@ -58,38 +87,26 @@ public partial class LookAroundAction : Action
         Vector3 playerWorldPos = Player.Value.position;
         Vector3 playerLocalToHead = Quaternion.Inverse(headRotation) * (playerWorldPos - headPosition);
 
-        if (TrapCheck(0, playerLocalToHead, GetSpottedCoordinates.Value) || TrapCheck(1, playerLocalToHead, GetSpottedCoordinates.Value))
-        {
-            if (CheckIfClearSight())
-            {
-                CurrentDetection.Value = Detection.Spotted;
-            }
-        }
-        else if (TrapCheck(0, playerLocalToHead, GetCuriousCoordinates.Value) || TrapCheck(1, playerLocalToHead, GetCuriousCoordinates.Value))
-        {
-            if (CheckIfClearSight())
-            {
+        Detection candidateDetection = CurrentDetection.Value == Detection.Searching ? Detection.Searching : Detection.Idle;
 
-                CurrentDetection.Value = Detection.Curious;
+        foreach (var zone in ZonePriorities())
+        {
+            if (zone.InZone(playerLocalToHead))
+            {
+                candidateDetection = zone.detectionOutcome;
+                break;
             }
         }
-        else if (PentCheck(playerLocalToHead, SixthSenseCoordinates.Value))
+
+        if (PlayerSeen(candidateDetection))
         {
-            if (CheckIfClearSight())
-            {
-                CurrentDetection.Value = ImmediateSense.Value ? Detection.Spotted : Detection.Curious;
-            }
-        }
-        else
-        {
-            if (CheckIfClearSight())
-            {
-                CurrentDetection.Value = CurrentDetection.Value == Detection.Searching ? Detection.Searching : Detection.Idle;
-            }
+            CurrentDetection.Value = candidateDetection;
         }
 
         return Status.Running;
     }
+
+    
 
     //coordinates to calculate correctly are 0 and 1, because it is reflected horizontally
     private bool TrapCheck(int coordinateNumber, Vector3 playerLocalToHead, List<Vector3> coordinates)
@@ -149,7 +166,7 @@ public partial class LookAroundAction : Action
         };
     }
 
-    private bool CheckIfClearSight()
+    private bool PlayerSeen(Detection outcomeDetection)
     {
         Vector3 origin = HeadBone.Value.position;
 
@@ -170,7 +187,10 @@ public partial class LookAroundAction : Action
 
         //how do you do this one raycast frame by frame?
 
-        float visibilityValue = 0;
+        int visibilityValue = 0;
+
+        int amountOfBonesSeen = 0;
+        float averageDistance = 0f;
 
         for (int i = 0; i < targets.Length; i++)
         {
@@ -184,8 +204,12 @@ public partial class LookAroundAction : Action
             if (Physics.Raycast(origin, targetBone.direction, out RaycastHit hit, targetBone.distance))
             {
                 visibilityValue += hit.collider.gameObject.layer == playerLayer ? targetBone.seenValue : 0;
+                amountOfBonesSeen++;
+                averageDistance += targetBone.distance;
             }
         }
+
+        averageDistance /= amountOfBonesSeen;
 
         suspicionGrowing = visibilityValue > 5 ? true : false;
 
@@ -196,9 +220,22 @@ public partial class LookAroundAction : Action
         else
         {
             currentSuspicionMeter = 0;
+            return false;
         }
 
-        return currentSuspicionMeter >= suspicionMeterMax.Value;
+        float detectionSuspicionMeter = suspicionMeterMax.Value;
+
+        if (outcomeDetection == Detection.Spotted)
+        {
+            float distanceRatio = 
+                averageDistance > 0f ? Mathf.Clamp01(averageDistance / GetCuriousCoordinates.Value[2].z) : 0f;
+
+            detectionSuspicionMeter = distanceRatio * 0.75f * suspicionMeterMax.Value;
+        }
+
+        suspicionMeterVisual.Value = Mathf.Clamp01(currentSuspicionMeter/detectionSuspicionMeter);
+
+        return currentSuspicionMeter >= detectionSuspicionMeter;
         //return visibilityValue > 5 ? true : false;
     }
 

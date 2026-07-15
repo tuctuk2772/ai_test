@@ -18,8 +18,8 @@ MonoBehaviour:
   getSpottedHorizontalMaxPercentage: 0.55
   getSpottedVerticalMaxPercentage: 0.55
   getCuriousVerticalOffset: 0
-  getCuriousVerticalMaxDistance: 13
-  getCuriousHorizontalMaxDistance: 6
+  getCuriousVerticalMaxDistance: 15
+  getCuriousHorizontalMaxDistance: 8
   getCuriousHorizontalMaxPercentage: 0.55
   getCuriousVerticalMaxPercentage: 0.7
   sixthSense: 1
@@ -28,11 +28,10 @@ MonoBehaviour:
   sixthSenseHorizontal: 5
   sixthSenseVertical: 2
   sixthSenseAnglePercentage: 0.5
-  suspicionMeterMax: 3
   getCuriousCoordinates:
-  - {x: 4.2, y: 0, z: 0}
-  - {x: 6, y: 0, z: 7.15}
-  - {x: 4.2, y: 0, z: 13}
+  - {x: 5.6, y: 0, z: 0}
+  - {x: 8, y: 0, z: 8.25}
+  - {x: 5.6, y: 0, z: 15}
   getSpottedCoordinates:
   - {x: 2.75, y: 0, z: 0}
   - {x: 5, y: 0, z: 5.775}

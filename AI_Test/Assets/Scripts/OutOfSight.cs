@@ -57,7 +57,8 @@ public class OutOfSight : MonoBehaviour
     {
         Plane[] planes = GeometryUtility.CalculateFrustumPlanes(mainCamera);
 
-        return planes.All(plane => plane.GetDistanceToPoint(transform.position) >= 0);
+        return planes.All(plane => plane.GetDistanceToPoint(transform.position) >= 0) 
+            || Vector3.Distance(transform.position, mainCamera.transform.position) < 5f;
     }
 
     private bool isBehind()
