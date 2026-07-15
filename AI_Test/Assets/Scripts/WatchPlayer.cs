@@ -1,11 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using Unity.Behavior;
 using UnityEngine;
-using UnityEngine.UIElements;
-
-
 
 public class WatchPlayer : MonoBehaviour
 {
@@ -19,6 +15,9 @@ public class WatchPlayer : MonoBehaviour
     [SerializeField, Range(0, 10)] private float memoryDuration;
     private bool justLostTrack = false;
     private float currentTimeStarted;
+
+    [Header("Suspicion")]
+    [SerializeField, Range(0, 10), InspectorName("Suspicion Meter Max (sec)")] private float suspicionMeterMax;
 
     [Header("Enemy Perception Settings")]
     [SerializeField] private EnemyPerceptionSettings enemyPerceptionSettings;
@@ -54,6 +53,7 @@ public class WatchPlayer : MonoBehaviour
         enemy_ai.SetVariableValue<bool>("SixthSense", ai.sixthSense);
         enemy_ai.SetVariableValue<bool>("ImmediateSense", ai.immediateSense);
         enemy_ai.SetVariableValue<float>("SixthSenseVerticalOffset", ai.sixthSenseVerticalOffset);
+        enemy_ai.SetVariableValue<float>("SuspicionMeterMax", suspicionMeterMax);
     }
     private void OnDrawGizmos()
     {

@@ -30,7 +30,7 @@ public class EnemyPerceptionEditor : Editor
 
         DrawPropertiesExcluding(serializedObject, "sixthSense", "immediateSense",
             "sixthSenseVerticalOffset", "sixthSenseHorizontal",
-            "sixthSenseVertical", "sixthSenseAnglePercentage");
+            "sixthSenseVertical", "sixthSenseAnglePercentage", "suspicionMeterMax");
 
         EditorGUILayout.PropertyField(sixthSense);
 
@@ -38,14 +38,13 @@ public class EnemyPerceptionEditor : Editor
         {
             if (group.visible)
             {
-                //EditorGUI.indentLevel++;
-                EditorGUILayout.Space();
-                EditorGUILayout.PropertyField(immediateSense);
+                EditorGUI.indentLevel++;
                 EditorGUILayout.PropertyField(sixthSenseVerticalOffset);
                 EditorGUILayout.PropertyField(sixthSenseHorizontal);
                 EditorGUILayout.PropertyField(sixthSenseVertical);
                 EditorGUILayout.PropertyField(sixthSenseAnglePercentage);
-                //EditorGUI.indentLevel--;
+                EditorGUILayout.PropertyField(immediateSense);
+                EditorGUI.indentLevel--;
             }
         }
 

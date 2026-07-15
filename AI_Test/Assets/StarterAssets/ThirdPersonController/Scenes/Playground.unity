@@ -8436,6 +8436,7 @@ MonoBehaviour:
   enemy_ai: {fileID: 972718120}
   _player: {fileID: 1762682265}
   memoryDuration: 5
+  suspicionMeterMax: 3
   enemyPerceptionSettings: {fileID: 11400000, guid: edc10027cb0514f4994988a5f2c27cf5, type: 2}
 --- !u!114 &969324367
 MonoBehaviour:
@@ -8646,9 +8647,6 @@ MonoBehaviour:
   animator: {fileID: 972718122}
   enemy_ai: {fileID: 972718120}
   enemyPerceptionSettings: {fileID: 11400000, guid: edc10027cb0514f4994988a5f2c27cf5, type: 2}
-  halved: 0
-  ogGetCuriousPoints: []
-  ogGetSpottedPoints: []
 --- !u!1 &1028513131
 GameObject:
   m_ObjectHideFlags: 0

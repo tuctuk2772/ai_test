@@ -1,9 +1,9 @@
 using System;
+using System.Collections.Generic;
 using Unity.Behavior;
+using Unity.Properties;
 using UnityEngine;
 using Action = Unity.Behavior.Action;
-using Unity.Properties;
-using System.Collections.Generic;
 
 [Serializable, GeneratePropertyBag]
 [NodeDescription(name: "Look Around", story: "Check if [agent] can see [player]", category: "Action/Find", id: "c9a9c2e49deb770d66f2ce9445b8f598")]
@@ -26,7 +26,12 @@ public partial class LookAroundAction : Action
     [SerializeReference] public BlackboardVariable<bool> SixthSense, ImmediateSense;
     [SerializeReference] public BlackboardVariable<float> SixthSenseVerticalOffset;
 
+    [SerializeReference] public BlackboardVariable<float> suspicionMeterMax;
+
     private int playerLayer;
+    private float currentSuspicionMeter = 0f;
+
+    private bool suspicionGrowing = false;
 
     protected override Status OnStart()
     {
@@ -36,10 +41,10 @@ public partial class LookAroundAction : Action
 
     protected override Status OnUpdate()
     {
-        if (Time.frameCount % (20 + EnemyNumber.Value) != 0)
-        {
-            return Status.Running;
-        }
+        /*        if (Time.frameCount % (20 + EnemyNumber.Value) != 0 && !suspicionGrowing)
+                {
+                    return Status.Running;
+                }*/
 
         if (Player.Value == null)
         {
@@ -122,7 +127,7 @@ public partial class LookAroundAction : Action
         public float distance;
 
         public Vector3 direction;
-        public float verticalAngle;
+        public float verticalOffset;
         public int seenValue;
     }
 
@@ -133,8 +138,6 @@ public partial class LookAroundAction : Action
         float distance = direction.magnitude;
         direction.Normalize();
 
-        float horizontalDistance = new Vector2(direction.x, direction.z).magnitude;
-
         return new Body
         {
             bonePosition = bonePosition,
@@ -142,7 +145,7 @@ public partial class LookAroundAction : Action
 
             direction = direction,
             distance = distance,
-            verticalAngle = Mathf.Atan2(direction.y, horizontalDistance) * Mathf.Rad2Deg
+            verticalOffset = Mathf.Abs(bonePosition.y - origin.y)
         };
     }
 
@@ -173,7 +176,7 @@ public partial class LookAroundAction : Action
         {
             Body targetBone = targets[i];
 
-            if (Mathf.Abs(targetBone.verticalAngle) > 4f)
+            if (Mathf.Abs(targetBone.verticalOffset) > 3f)
             {
                 continue;
             }
@@ -184,9 +187,10 @@ public partial class LookAroundAction : Action
             }
         }
 
-        Debug.Log(visibilityValue);
+        suspicionGrowing = visibilityValue > 5 ? true : false;
 
-        return visibilityValue > 5 ? true : false;
+        return false;
+        //return visibilityValue > 5 ? true : false;
     }
 
     protected override void OnEnd()

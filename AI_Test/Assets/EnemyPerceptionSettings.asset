@@ -28,6 +28,7 @@ MonoBehaviour:
   sixthSenseHorizontal: 5
   sixthSenseVertical: 2
   sixthSenseAnglePercentage: 0.5
+  suspicionMeterMax: 3
   getCuriousCoordinates:
   - {x: 4.2, y: 0, z: 0}
   - {x: 6, y: 0, z: 7.15}
