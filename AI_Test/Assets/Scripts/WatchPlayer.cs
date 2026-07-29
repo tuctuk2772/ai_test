@@ -17,10 +17,13 @@ public class WatchPlayer : MonoBehaviour
     private float currentTimeStarted;
 
     [Header("Suspicion")]
-    [SerializeField, Range(0, 10), InspectorName("Suspicion Meter Max (sec)")] private float suspicionMeterMax;
+    [SerializeField] private Vector2 suspicionMeter;
+
+    //[SerializeField, Range(0, 10), InspectorName("Suspicion Meter Max (sec)")] private float suspicionMeterMax;
+    //[SerializeField, Range(0, 5), InspectorName("Suspicion Meter Min (sec)")] private float suspicionMeterMin;
 
     [Header("Enemy Perception Settings")]
-    [SerializeField] private EnemyPerceptionSettings enemyPerceptionSettings;
+    [SerializeField, InspectorName("")] private EnemyPerceptionSettings enemyPerceptionSettings;
 
     //just lazy, want to write a bit less :)
     private EnemyPerceptionSettings ai => enemyPerceptionSettings;
@@ -53,7 +56,7 @@ public class WatchPlayer : MonoBehaviour
         enemy_ai.SetVariableValue<bool>("SixthSense", ai.sixthSense);
         enemy_ai.SetVariableValue<bool>("ImmediateSense", ai.immediateSense);
         enemy_ai.SetVariableValue<float>("SixthSenseVerticalOffset", ai.sixthSenseVerticalOffset);
-        enemy_ai.SetVariableValue<float>("SuspicionMeterMax", suspicionMeterMax);
+        enemy_ai.SetVariableValue<float>("SuspicionMeterMax", suspicionMeter.y);
     }
     private void OnDrawGizmos()
     {
@@ -113,7 +116,7 @@ public class WatchPlayer : MonoBehaviour
         }
 
         Gizmos.color = Color.magenta;
-        DebugDrawRangeLines();
+        //DebugDrawRangeLines();
 
         Gizmos.color = Color.black;
 

@@ -40,6 +40,7 @@ public partial class LookAroundAction : Action
         public Func<Vector3, bool> InZone;
     }
 
+    //priorities from top to bottom
     private List<DetectionZone> ZonePriorities()
     {
         return new List<DetectionZone>()
@@ -106,8 +107,9 @@ public partial class LookAroundAction : Action
         return Status.Running;
     }
 
-    
 
+
+    #region CoordinateChecks
     //coordinates to calculate correctly are 0 and 1, because it is reflected horizontally
     private bool TrapCheck(int coordinateNumber, Vector3 playerLocalToHead, List<Vector3> coordinates)
     {
@@ -137,6 +139,8 @@ public partial class LookAroundAction : Action
 
         return inHorizontalRange && playerLocalToHead.z >= maxVerticalAtZ && playerLocalToHead.z <= sixthCoordinates[0].z;
     }
+
+    #endregion
 
     private struct Body
     {
@@ -213,31 +217,30 @@ public partial class LookAroundAction : Action
 
         suspicionGrowing = visibilityValue > 5 ? true : false;
 
+        suspicionMeterVisual.Value = currentSuspicionMeter;
+
         if (suspicionGrowing)
         {
             currentSuspicionMeter += Time.deltaTime;
         }
         else
         {
-            //suspicion currently snaps back down
             if(currentSuspicionMeter > 0)
             {
                 currentSuspicionMeter -= 0.25f * Time.deltaTime;
-                suspicionMeterVisual.Value -= currentSuspicionMeter;
             }
             return false;
         }
 
         float detectionSuspicionMeter = suspicionMeterMax.Value;
 
+        //the closer the enemy is to the player, the faster the player is detected
         if (outcomeDetection == Detection.Spotted)
         {
             float distanceRatio = Mathf.Clamp01(averageDistance / GetCuriousCoordinates.Value[2].z);
 
             detectionSuspicionMeter = distanceRatio * 0.75f * suspicionMeterMax.Value;
         }
-
-        suspicionMeterVisual.Value = Mathf.Clamp01(currentSuspicionMeter/detectionSuspicionMeter);
 
         return currentSuspicionMeter >= detectionSuspicionMeter;
     }
