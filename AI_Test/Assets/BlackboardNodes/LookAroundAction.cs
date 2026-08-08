@@ -34,6 +34,7 @@ public partial class LookAroundAction : Action
 
     private bool suspicionGrowing = false;
 
+    #region ZoneSetup
     private struct DetectionZone
     {
         public Detection detectionOutcome;
@@ -62,6 +63,7 @@ public partial class LookAroundAction : Action
         }
         };
     }
+    #endregion
 
     protected override Status OnStart()
     {
@@ -71,10 +73,11 @@ public partial class LookAroundAction : Action
 
     protected override Status OnUpdate()
     {
-        /*        if (Time.frameCount % (20 + EnemyNumber.Value) != 0 && !suspicionGrowing)
-                {
-                    return Status.Running;
-                }*/
+        //checks every 20 frames, creates some issues rn
+        /*if (Time.frameCount % (20 + EnemyNumber.Value) != 0 && !suspicionGrowing)
+        {
+            return Status.Running;
+        }*/
 
         if (Player.Value == null)
         {
@@ -142,6 +145,7 @@ public partial class LookAroundAction : Action
 
     #endregion
 
+    #region BodySetup
     private struct Body
     {
         public Vector3 bonePosition;
@@ -169,13 +173,15 @@ public partial class LookAroundAction : Action
             verticalOffset = Mathf.Abs(bonePosition.y - origin.y)
         };
     }
+    #endregion
 
+    //the final output is based on a timer, not automatically detected
     private bool PlayerSeen(Detection outcomeDetection)
     {
         Vector3 origin = HeadBone.Value.position;
 
-        //priority for specific body parts
-        Body[] targets = new Body[]
+        //there has to be a way to lock these references in, right? but maybe because you have to grab current positions idk
+        Body[] targets = new Body[] //priority for specific body parts
         {
             CreateBody(ref origin, HumanBodyBones.Head, 3),
             CreateBody(ref origin, HumanBodyBones.LeftUpperArm, 2),
@@ -189,11 +195,9 @@ public partial class LookAroundAction : Action
             CreateBody(ref origin, HumanBodyBones.RightLowerLeg, 1),
         };
 
-        //how do you do this one raycast frame by frame?
+        int visibilityValue = 0; //different locations on the body have different visibilityValues
 
-        int visibilityValue = 0;
-
-        int amountOfBonesSeen = 0;
+        int amountOfBonesSeen = 0; //amount of bones is important to divide all visible bones to get averageDistance
         float averageDistance = 0f;
 
         for (int i = 0; i < targets.Length; i++)
@@ -205,6 +209,7 @@ public partial class LookAroundAction : Action
                 continue;
             }
 
+            //how do you do this one raycast frame by frame instead of all at once?
             if (Physics.Raycast(origin, targetBone.direction, out RaycastHit hit, targetBone.distance))
             {
                 visibilityValue += hit.collider.gameObject.layer == playerLayer ? targetBone.seenValue : 0;
@@ -213,36 +218,48 @@ public partial class LookAroundAction : Action
             }
         }
 
-        averageDistance /= amountOfBonesSeen;
+        suspicionMeterVisual.Value = currentSuspicionMeter;
 
         suspicionGrowing = visibilityValue > 5 ? true : false;
 
-        suspicionMeterVisual.Value = currentSuspicionMeter;
-
-        if (suspicionGrowing)
+        //player is not seen at all or not enough
+        if (amountOfBonesSeen == 0 || !suspicionGrowing)
         {
-            currentSuspicionMeter += Time.deltaTime;
-        }
-        else
-        {
-            if(currentSuspicionMeter > 0)
-            {
-                currentSuspicionMeter -= 0.25f * Time.deltaTime;
-            }
-            return false;
+            return GradualSuspicionReduction();
         }
 
-        float detectionSuspicionMeter = suspicionMeterMax.Value;
+        averageDistance /= amountOfBonesSeen;
 
-        //the closer the enemy is to the player, the faster the player is detected
+        //by default, the max duration is set to the max suspicion meter
+        float maxDurationBeforeSpotted = suspicionMeterMax.Value;
+        currentSuspicionMeter += Time.deltaTime;
+
+        //the closer the enemy is to the player, the faster the player is detected,
+        //but it is a static buildup if it's just curious
         if (outcomeDetection == Detection.Spotted)
         {
             float distanceRatio = Mathf.Clamp01(averageDistance / GetCuriousCoordinates.Value[2].z);
 
-            detectionSuspicionMeter = distanceRatio * 0.75f * suspicionMeterMax.Value;
+            maxDurationBeforeSpotted = distanceRatio * 0.75f * suspicionMeterMax.Value;
         }
 
-        return currentSuspicionMeter >= detectionSuspicionMeter;
+        return currentSuspicionMeter >= maxDurationBeforeSpotted;
+    }
+
+    private bool GradualSuspicionReduction()
+    {
+        if (currentSuspicionMeter > 0)
+        {
+            currentSuspicionMeter -= 0.25f * Time.deltaTime;
+        }
+
+        //prevents accidental mixups
+        if (currentSuspicionMeter < 0)
+        {
+            currentSuspicionMeter = 0;
+        }
+
+        return false; //because it is being reduced, it's automatically false
     }
 
     protected override void OnEnd()
