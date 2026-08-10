@@ -102,6 +102,12 @@ public partial class LookAroundAction : Action
             }
         }
 
+        if (candidateDetection == Detection.Idle || candidateDetection == Detection.Searching)
+        {
+            GradualSuspicionReduction();
+            return Status.Running;
+        }
+
         if (PlayerSeen(candidateDetection))
         {
             CurrentDetection.Value = candidateDetection;
@@ -230,6 +236,9 @@ public partial class LookAroundAction : Action
 
         averageDistance /= amountOfBonesSeen;
 
+        string debugColor = outcomeDetection == Detection.Curious ? "yellow" : "red";
+        Debug.Log($"<color={debugColor}>{averageDistance}</color>");
+
         //by default, the max duration is set to the max suspicion meter
         float maxDurationBeforeSpotted = suspicionMeterMax.Value;
         currentSuspicionMeter += Time.deltaTime;
@@ -243,6 +252,7 @@ public partial class LookAroundAction : Action
             maxDurationBeforeSpotted = distanceRatio * 0.75f * suspicionMeterMax.Value;
         }
 
+        return false;
         return currentSuspicionMeter >= maxDurationBeforeSpotted;
     }
 

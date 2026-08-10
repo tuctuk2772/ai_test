@@ -13,30 +13,30 @@ MonoBehaviour:
   m_Name: EnemyPerceptionSettings
   m_EditorClassIdentifier: Assembly-CSharp::EnemyPerceptionSettings
   getSpottedVerticalOffset: 0
-  getSpottedVerticalMaxDistance: 10.5
-  getSpottedHorizontalMaxDistance: 5
+  getSpottedVerticalMaxDistance: 5.25
+  getSpottedHorizontalMaxDistance: 2.5
   getSpottedHorizontalMaxPercentage: 0.55
   getSpottedVerticalMaxPercentage: 0.55
   getCuriousVerticalOffset: 0
-  getCuriousVerticalMaxDistance: 15
-  getCuriousHorizontalMaxDistance: 8
+  getCuriousVerticalMaxDistance: 7.5
+  getCuriousHorizontalMaxDistance: 4
   getCuriousHorizontalMaxPercentage: 0.55
   getCuriousVerticalMaxPercentage: 0.7
   sixthSense: 1
   immediateSense: 0
   sixthSenseVerticalOffset: 0.25
-  sixthSenseHorizontal: 5
-  sixthSenseVertical: 2
+  sixthSenseHorizontal: 2.5
+  sixthSenseVertical: 1
   sixthSenseAnglePercentage: 0.5
   getCuriousCoordinates:
-  - {x: 5.6, y: 0, z: 0}
-  - {x: 8, y: 0, z: 8.25}
-  - {x: 5.6, y: 0, z: 15}
+  - {x: 2.8, y: 0, z: 0}
+  - {x: 4, y: 0, z: 4.125}
+  - {x: 2.8, y: 0, z: 7.5}
   getSpottedCoordinates:
-  - {x: 2.75, y: 0, z: 0}
-  - {x: 5, y: 0, z: 5.775}
-  - {x: 2.75, y: 0, z: 10.5}
+  - {x: 1.375, y: 0, z: 0}
+  - {x: 2.5, y: 0, z: 2.8875}
+  - {x: 1.375, y: 0, z: 5.25}
   sixthSenseCoordinates:
-  - {x: 5, y: 0, z: -0.25}
-  - {x: 5, y: 0, z: -2.25}
-  - {x: 2.5, y: 0, z: -2.25}
+  - {x: 2.5, y: 0, z: -0.25}
+  - {x: 2.5, y: 0, z: -1.25}
+  - {x: 1.25, y: 0, z: -1.25}
