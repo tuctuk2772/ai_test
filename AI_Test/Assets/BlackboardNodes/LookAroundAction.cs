@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using Unity.Behavior;
 using Unity.Properties;
 using UnityEngine;
+using UniversalFunctions;
+
 using Action = Unity.Behavior.Action;
 
 [Serializable, GeneratePropertyBag]
@@ -26,7 +28,7 @@ public partial class LookAroundAction : Action
     [SerializeReference] public BlackboardVariable<bool> SixthSense, ImmediateSense;
     [SerializeReference] public BlackboardVariable<float> SixthSenseVerticalOffset;
 
-    [SerializeReference] public BlackboardVariable<float> suspicionMeterMax;
+    [SerializeReference] public BlackboardVariable<Vector2> suspicionMeter;
     [SerializeReference] public BlackboardVariable<float> suspicionMeterVisual;
 
     private int playerLayer;
@@ -38,6 +40,7 @@ public partial class LookAroundAction : Action
     private struct DetectionZone
     {
         public Detection detectionOutcome;
+        public List<Vector3> zoneCoordinates;
         public Func<Vector3, bool> InZone;
     }
 
@@ -49,16 +52,19 @@ public partial class LookAroundAction : Action
             new DetectionZone
         {
             detectionOutcome = Detection.Spotted,
+            zoneCoordinates = GetSpottedCoordinates.Value,
             InZone = pos => TrapCheck(0, pos, GetSpottedCoordinates.Value) || TrapCheck(1, pos, GetSpottedCoordinates.Value)
         },
         new DetectionZone
         {
             detectionOutcome = Detection.Curious,
+            zoneCoordinates = GetCuriousCoordinates.Value,
             InZone = pos => TrapCheck(0, pos, GetCuriousCoordinates.Value) || TrapCheck(1, pos, GetCuriousCoordinates.Value)
         },
         new DetectionZone
         {
             detectionOutcome = ImmediateSense.Value ? Detection.Spotted : Detection.Curious,
+            zoneCoordinates = SixthSenseCoordinates.Value,
             InZone = pos => PentCheck(pos, SixthSenseCoordinates.Value)
         }
         };
@@ -73,6 +79,8 @@ public partial class LookAroundAction : Action
 
     protected override Status OnUpdate()
     {
+        Debug.Log(suspicionMeter.Value.x);
+
         //checks every 20 frames, creates some issues rn
         /*if (Time.frameCount % (20 + EnemyNumber.Value) != 0 && !suspicionGrowing)
         {
@@ -91,13 +99,17 @@ public partial class LookAroundAction : Action
         Vector3 playerWorldPos = Player.Value.position;
         Vector3 playerLocalToHead = Quaternion.Inverse(headRotation) * (playerWorldPos - headPosition);
 
+        //by default, ai doesn't see player
         Detection candidateDetection = CurrentDetection.Value == Detection.Searching ? Detection.Searching : Detection.Idle;
+
+        List<Vector3> candidateCoordinates = new(); //check this later, this might cause issues
 
         foreach (var zone in ZonePriorities())
         {
             if (zone.InZone(playerLocalToHead))
             {
                 candidateDetection = zone.detectionOutcome;
+                candidateCoordinates = zone.zoneCoordinates;
                 break;
             }
         }
@@ -108,10 +120,15 @@ public partial class LookAroundAction : Action
             return Status.Running;
         }
 
-        if (PlayerSeen(candidateDetection))
+        if (PlayerSeen(candidateDetection, ref candidateCoordinates))
         {
-            CurrentDetection.Value = candidateDetection;
+            Debug.Log("spotted");
         }
+
+        //if (PlayerSeen(candidateDetection))
+        //{
+        //    CurrentDetection.Value = candidateDetection;
+        //}
 
         return Status.Running;
     }
@@ -182,7 +199,7 @@ public partial class LookAroundAction : Action
     #endregion
 
     //the final output is based on a timer, not automatically detected
-    private bool PlayerSeen(Detection outcomeDetection)
+    private bool PlayerSeen(Detection outcomeDetection, ref List<Vector3> zoneCoordinates)
     {
         Vector3 origin = HeadBone.Value.position;
 
@@ -224,35 +241,48 @@ public partial class LookAroundAction : Action
             }
         }
 
-        suspicionMeterVisual.Value = currentSuspicionMeter;
+        //by default, the max duration is set to the max suspicion meter
+        float maxDurationBeforeSpotted = suspicionMeter.Value.y;
 
         suspicionGrowing = visibilityValue > 5 ? true : false;
+
+        //TODO - instead of increasing or decreasing maximum value, increase speed of detection!!!!
 
         //player is not seen at all or not enough
         if (amountOfBonesSeen == 0 || !suspicionGrowing)
         {
-            return GradualSuspicionReduction();
+            GradualSuspicionReduction();
         }
-
-        averageDistance /= amountOfBonesSeen;
-
-        string debugColor = outcomeDetection == Detection.Curious ? "yellow" : "red";
-        Debug.Log($"<color={debugColor}>{averageDistance}</color>");
-
-        //by default, the max duration is set to the max suspicion meter
-        float maxDurationBeforeSpotted = suspicionMeterMax.Value;
-        currentSuspicionMeter += Time.deltaTime;
-
-        //the closer the enemy is to the player, the faster the player is detected,
-        //but it is a static buildup if it's just curious
-        if (outcomeDetection == Detection.Spotted)
+        else
         {
-            float distanceRatio = Mathf.Clamp01(averageDistance / GetCuriousCoordinates.Value[2].z);
+            averageDistance /= amountOfBonesSeen; 
 
-            maxDurationBeforeSpotted = distanceRatio * 0.75f * suspicionMeterMax.Value;
+            string debugColor = outcomeDetection == Detection.Curious ? "yellow" : "red";
+            //Debug.Log($"<color={debugColor}>{averageDistance}</color>");
+
+            currentSuspicionMeter += Time.deltaTime;
+
+            //the closer the enemy is to the player, the faster the player is detected,
+            //but it is a static buildup if it's just curious
+            if (outcomeDetection == Detection.Spotted)
+            {
+                maxDurationBeforeSpotted = _UniversalFunctions.ConvertRangeNewValue(
+                    oldMin: zoneCoordinates[0].z, 
+                    oldMax: zoneCoordinates[2].z,
+                    newMin: suspicionMeter.Value.x,
+                    newMax: suspicionMeter.Value.y,
+                    oldValue: averageDistance);
+            }
         }
 
-        return false;
+        suspicionMeterVisual.Value = _UniversalFunctions.ConvertRangeNewValue(
+            oldMin: suspicionMeter.Value.x,
+            oldMax: maxDurationBeforeSpotted,
+            newMin: 0f,
+            newMax: 1f,
+            oldValue: currentSuspicionMeter
+            );
+
         return currentSuspicionMeter >= maxDurationBeforeSpotted;
     }
 
@@ -263,7 +293,7 @@ public partial class LookAroundAction : Action
             currentSuspicionMeter -= 0.25f * Time.deltaTime;
         }
 
-        //prevents accidental mixups
+        //prevents accidental negative numbers
         if (currentSuspicionMeter < 0)
         {
             currentSuspicionMeter = 0;

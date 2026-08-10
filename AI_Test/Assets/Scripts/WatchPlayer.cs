@@ -48,6 +48,10 @@ public class WatchPlayer : MonoBehaviour
             Debug.LogError("Player not assigned!");
         }
 
+        //suspicion meter rounding
+        Vector2 newSuspicionMeter = new Vector2(Mathf.Round(suspicionMeter.x * 10f)/10f,Mathf.Round(suspicionMeter.y * 10f)/10f);
+        suspicionMeter = newSuspicionMeter;
+
         enemy_ai.SetVariableValue<List<Vector3>>("GetCuriousCoordinates", ai.getCuriousCoordinates.ToList<Vector3>());
         enemy_ai.SetVariableValue<List<Vector3>>("GetSpottedCoordinates", ai.getSpottedCoordinates.ToList<Vector3>());
         enemy_ai.SetVariableValue<List<Vector3>>("SixthSenseCoordinates", ai.sixthSenseCoordinates.ToList<Vector3>());
@@ -56,7 +60,7 @@ public class WatchPlayer : MonoBehaviour
         enemy_ai.SetVariableValue<bool>("SixthSense", ai.sixthSense);
         enemy_ai.SetVariableValue<bool>("ImmediateSense", ai.immediateSense);
         enemy_ai.SetVariableValue<float>("SixthSenseVerticalOffset", ai.sixthSenseVerticalOffset);
-        enemy_ai.SetVariableValue<float>("SuspicionMeterMax", suspicionMeter.y);
+        enemy_ai.SetVariableValue<Vector2>("SuspicionMeter", suspicionMeter);
     }
     private void OnDrawGizmos()
     {
