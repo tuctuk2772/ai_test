@@ -33,6 +33,7 @@ public partial class LookAroundAction : Action
 
     private int playerLayer;
     private float currentSuspicionMeter = 0f;
+    private float maxDurationBeforeSpotted = 1f;
 
     private bool suspicionGrowing = false;
 
@@ -79,8 +80,6 @@ public partial class LookAroundAction : Action
 
     protected override Status OnUpdate()
     {
-        Debug.Log(suspicionMeter.Value.x);
-
         //checks every 20 frames, creates some issues rn
         /*if (Time.frameCount % (20 + EnemyNumber.Value) != 0 && !suspicionGrowing)
         {
@@ -117,18 +116,19 @@ public partial class LookAroundAction : Action
         if (candidateDetection == Detection.Idle || candidateDetection == Detection.Searching)
         {
             GradualSuspicionReduction();
+            suspicionMeterVisual.Value = currentSuspicionMeter / maxDurationBeforeSpotted;
             return Status.Running;
         }
 
+        //if (PlayerSeen(candidateDetection, ref candidateCoordinates))
+        //{
+        //    Debug.Log(candidateDetection);
+        //}
+
         if (PlayerSeen(candidateDetection, ref candidateCoordinates))
         {
-            Debug.Log("spotted");
+            CurrentDetection.Value = candidateDetection;
         }
-
-        //if (PlayerSeen(candidateDetection))
-        //{
-        //    CurrentDetection.Value = candidateDetection;
-        //}
 
         return Status.Running;
     }
@@ -242,11 +242,9 @@ public partial class LookAroundAction : Action
         }
 
         //by default, the max duration is set to the max suspicion meter
-        float maxDurationBeforeSpotted = suspicionMeter.Value.y;
+        maxDurationBeforeSpotted = suspicionMeter.Value.y;
 
         suspicionGrowing = visibilityValue > 5 ? true : false;
-
-        //TODO - instead of increasing or decreasing maximum value, increase speed of detection!!!!
 
         //player is not seen at all or not enough
         if (amountOfBonesSeen == 0 || !suspicionGrowing)
@@ -255,16 +253,13 @@ public partial class LookAroundAction : Action
         }
         else
         {
-            averageDistance /= amountOfBonesSeen; 
-
-            string debugColor = outcomeDetection == Detection.Curious ? "yellow" : "red";
-            //Debug.Log($"<color={debugColor}>{averageDistance}</color>");
+            averageDistance /= amountOfBonesSeen;
 
             currentSuspicionMeter += Time.deltaTime;
 
             //the closer the enemy is to the player, the faster the player is detected,
             //but it is a static buildup if it's just curious
-            if (outcomeDetection == Detection.Spotted)
+            /*if (outcomeDetection == Detection.Spotted)
             {
                 maxDurationBeforeSpotted = _UniversalFunctions.ConvertRangeNewValue(
                     oldMin: zoneCoordinates[0].z, 
@@ -272,25 +267,23 @@ public partial class LookAroundAction : Action
                     newMin: suspicionMeter.Value.x,
                     newMax: suspicionMeter.Value.y,
                     oldValue: averageDistance);
-            }
+            }*/
         }
 
-        suspicionMeterVisual.Value = _UniversalFunctions.ConvertRangeNewValue(
-            oldMin: suspicionMeter.Value.x,
-            oldMax: maxDurationBeforeSpotted,
-            newMin: 0f,
-            newMax: 1f,
-            oldValue: currentSuspicionMeter
-            );
+        float adjustedCurrentSuspicionMeter = currentSuspicionMeter / maxDurationBeforeSpotted;
 
-        return currentSuspicionMeter >= maxDurationBeforeSpotted;
+        suspicionMeterVisual.Value = adjustedCurrentSuspicionMeter;
+
+        //Debug.Log(maxDurationBeforeSpotted);
+
+        return adjustedCurrentSuspicionMeter >= maxDurationBeforeSpotted;
     }
 
     private bool GradualSuspicionReduction()
     {
         if (currentSuspicionMeter > 0)
         {
-            currentSuspicionMeter -= 0.25f * Time.deltaTime;
+            currentSuspicionMeter -= (maxDurationBeforeSpotted * 0.25f) * Time.deltaTime;
         }
 
         //prevents accidental negative numbers

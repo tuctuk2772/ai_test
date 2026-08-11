@@ -23,11 +23,11 @@ MonoBehaviour:
   getCuriousHorizontalMaxPercentage: 0.55
   getCuriousVerticalMaxPercentage: 0.7
   sixthSense: 1
-  immediateSense: 0
+  immediateSense: 1
   sixthSenseVerticalOffset: 0.25
   sixthSenseHorizontal: 5
   sixthSenseVertical: 2
-  sixthSenseAnglePercentage: 0.5
+  sixthSenseAnglePercentage: 0.15
   getCuriousCoordinates:
   - {x: 5.6, y: 0, z: 0}
   - {x: 8, y: 0, z: 8.25}
@@ -39,4 +39,4 @@ MonoBehaviour:
   sixthSenseCoordinates:
   - {x: 5, y: 0, z: -0.25}
   - {x: 5, y: 0, z: -2.25}
-  - {x: 2.5, y: 0, z: -2.25}
+  - {x: 0.75, y: 0, z: -2.25}
