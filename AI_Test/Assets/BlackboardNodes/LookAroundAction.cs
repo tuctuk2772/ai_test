@@ -241,6 +241,8 @@ public partial class LookAroundAction : Action
             }
         }
 
+        float oldMaxDurationBeforeSpotted = maxDurationBeforeSpotted;
+
         //by default, the max duration is set to the max suspicion meter
         maxDurationBeforeSpotted = suspicionMeter.Value.y;
 
@@ -255,28 +257,53 @@ public partial class LookAroundAction : Action
         {
             averageDistance /= amountOfBonesSeen;
 
-            currentSuspicionMeter += Time.deltaTime;
+            float oldSuspicionMeterValue = currentSuspicionMeter;
 
             //the closer the enemy is to the player, the faster the player is detected,
             //but it is a static buildup if it's just curious
-            /*if (outcomeDetection == Detection.Spotted)
+            switch (outcomeDetection)
             {
-                maxDurationBeforeSpotted = _UniversalFunctions.ConvertRangeNewValue(
-                    oldMin: zoneCoordinates[0].z, 
-                    oldMax: zoneCoordinates[2].z,
+                case Detection.Spotted:
+                    maxDurationBeforeSpotted = _UniversalFunctions.ConvertRangeNewValue(
+                    oldMin: Mathf.Abs(zoneCoordinates[0].z),
+                    oldMax: Mathf.Abs(zoneCoordinates[2].z),
                     newMin: suspicionMeter.Value.x,
                     newMax: suspicionMeter.Value.y,
                     oldValue: averageDistance);
-            }*/
+                    break;
+                case Detection.Curious:
+                    break;
+                default:
+                    Debug.LogError("outcome detection error!");
+                    break;
+            }
+
+            currentSuspicionMeter = _UniversalFunctions.ConvertRangeNewValue(
+                        oldMin: 0,
+                        oldMax: oldMaxDurationBeforeSpotted,
+                        newMin: 0,
+                        newMax: maxDurationBeforeSpotted,
+                        oldValue: oldSuspicionMeterValue
+                        );
+
+            currentSuspicionMeter += Time.deltaTime;
         }
 
-        float adjustedCurrentSuspicionMeter = currentSuspicionMeter / maxDurationBeforeSpotted;
+        float adjustedCurrentSuspicionMeter = _UniversalFunctions.ConvertRangeNewValue(
+                        oldMin: 0,
+                        oldMax: maxDurationBeforeSpotted,
+                        newMin: 0,
+                        newMax: 1,
+                        oldValue: currentSuspicionMeter
+                        );
+
+        Debug.Log(adjustedCurrentSuspicionMeter);
 
         suspicionMeterVisual.Value = adjustedCurrentSuspicionMeter;
 
         //Debug.Log(maxDurationBeforeSpotted);
 
-        return adjustedCurrentSuspicionMeter >= maxDurationBeforeSpotted;
+        return adjustedCurrentSuspicionMeter >= 1f;
     }
 
     private bool GradualSuspicionReduction()
