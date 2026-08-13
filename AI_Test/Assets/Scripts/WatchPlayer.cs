@@ -18,6 +18,7 @@ public class WatchPlayer : MonoBehaviour
 
     [Header("Suspicion")]
     [SerializeField] private Vector2 suspicionMeter;
+    [SerializeField] private Vector3 newSuspicionMeter;
 
     //[SerializeField, Range(0, 10), InspectorName("Suspicion Meter Max (sec)")] private float suspicionMeterMax;
     //[SerializeField, Range(0, 5), InspectorName("Suspicion Meter Min (sec)")] private float suspicionMeterMin;
@@ -49,7 +50,7 @@ public class WatchPlayer : MonoBehaviour
         }
 
         //suspicion meter rounding
-        Vector2 newSuspicionMeter = new Vector2(Mathf.Round(suspicionMeter.x * 10f)/10f,Mathf.Round(suspicionMeter.y * 10f)/10f);
+        Vector2 newSuspicionMeter = new Vector2(Mathf.Round(suspicionMeter.x * 10f) / 10f, Mathf.Round(suspicionMeter.y * 10f) / 10f);
         suspicionMeter = newSuspicionMeter;
 
         enemy_ai.SetVariableValue<List<Vector3>>("GetCuriousCoordinates", ai.getCuriousCoordinates.ToList<Vector3>());
