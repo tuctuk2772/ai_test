@@ -7,6 +7,14 @@ using UniversalFunctions;
 
 using Action = Unity.Behavior.Action;
 
+/*todo -
+ * - decouple increase and decrease detection
+ * - decouple visual conversion from regular detecton float (two separate Blackboard Variables)
+ * - convert PlayerSeen to float - it's not a binary system
+ *      - switching states should be in behaviour tree
+ * - move trap/pent checks into separate script
+*/
+
 [Serializable, GeneratePropertyBag]
 [NodeDescription(name: "Look Around", story: "Check if [agent] can see [player]", category: "Action/Find", id: "c9a9c2e49deb770d66f2ce9445b8f598")]
 public partial class LookAroundAction : Action
