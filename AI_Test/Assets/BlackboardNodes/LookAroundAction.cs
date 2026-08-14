@@ -37,10 +37,11 @@ public partial class LookAroundAction : Action
     [SerializeReference] public BlackboardVariable<float> SixthSenseVerticalOffset;
 
     [SerializeReference] public BlackboardVariable<Vector3> suspicionMeter;
+    [SerializeReference] public BlackboardVariable<float> currentSuspicionMeter;
     [SerializeReference] public BlackboardVariable<float> suspicionMeterVisual;
 
     private int playerLayer;
-    private float currentSuspicionMeter = 0f;
+    //private float currentSuspicionMeter = 0f;
     private float maxDurationBeforeSpotted = 1f;
 
     private bool suspicionGrowing = false;
@@ -281,7 +282,7 @@ public partial class LookAroundAction : Action
                     oldValue: averageDistance);
             }
 
-            currentSuspicionMeter = _UniversalFunctions.ConvertRangeNewValue(
+            currentSuspicionMeter.Value = _UniversalFunctions.ConvertRangeNewValue(
                         oldMin: 0,
                         oldMax: oldMaxDurationBeforeSpotted,
                         newMin: 0,
@@ -289,7 +290,7 @@ public partial class LookAroundAction : Action
                         oldValue: oldSuspicionMeterValue
                         );
 
-            currentSuspicionMeter += Time.deltaTime;
+            currentSuspicionMeter.Value += Time.deltaTime;
         }
 
         //converts to range 0 thru 1
@@ -311,13 +312,13 @@ public partial class LookAroundAction : Action
         //for the future, I'd like the speed of this to go down more consistantly, but this is fine for now
         if (currentSuspicionMeter > 0)
         {
-            currentSuspicionMeter -= (maxDurationBeforeSpotted * 0.25f) * Time.deltaTime;
+            currentSuspicionMeter.Value -= (maxDurationBeforeSpotted * 0.25f) * Time.deltaTime;
         }
 
         //prevents accidental negative numbers
         if (currentSuspicionMeter < 0)
         {
-            currentSuspicionMeter = 0;
+            currentSuspicionMeter.Value = 0;
         }
     }
 
