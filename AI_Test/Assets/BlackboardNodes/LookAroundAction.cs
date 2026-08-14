@@ -28,7 +28,7 @@ public partial class LookAroundAction : Action
     [SerializeReference] public BlackboardVariable<bool> SixthSense, ImmediateSense;
     [SerializeReference] public BlackboardVariable<float> SixthSenseVerticalOffset;
 
-    [SerializeReference] public BlackboardVariable<Vector2> suspicionMeter;
+    [SerializeReference] public BlackboardVariable<Vector3> suspicionMeter;
     [SerializeReference] public BlackboardVariable<float> suspicionMeterVisual;
 
     private int playerLayer;
@@ -75,6 +75,7 @@ public partial class LookAroundAction : Action
     protected override Status OnStart()
     {
         playerLayer = LayerMask.NameToLayer("Player");
+        Debug.Log(suspicionMeter.Value);
         return Status.Running;
     }
 
@@ -262,7 +263,7 @@ public partial class LookAroundAction : Action
 
             //the closer the enemy is to the player, the faster the player is detected,
             //but it is a static buildup if it's just curious
-            if(outcomeDetection == Detection.Spotted)
+            if (outcomeDetection == Detection.Spotted)
             {
                 maxDurationBeforeSpotted = _UniversalFunctions.ConvertRangeNewValue(
                     oldMin: Mathf.Abs(zoneCoordinates[0].z),

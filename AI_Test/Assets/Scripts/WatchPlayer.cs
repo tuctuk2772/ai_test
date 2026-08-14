@@ -17,8 +17,7 @@ public class WatchPlayer : MonoBehaviour
     private float currentTimeStarted;
 
     [Header("Suspicion")]
-    [SerializeField] private Vector2 suspicionMeter;
-    [SerializeField] private Vector3 newSuspicionMeter;
+    [SerializeField] private Vector3 suspicionMeter;
 
     //[SerializeField, Range(0, 10), InspectorName("Suspicion Meter Max (sec)")] private float suspicionMeterMax;
     //[SerializeField, Range(0, 5), InspectorName("Suspicion Meter Min (sec)")] private float suspicionMeterMin;
@@ -50,8 +49,11 @@ public class WatchPlayer : MonoBehaviour
         }
 
         //suspicion meter rounding
-        Vector2 newSuspicionMeter = new Vector2(Mathf.Round(suspicionMeter.x * 10f) / 10f, Mathf.Round(suspicionMeter.y * 10f) / 10f);
-        suspicionMeter = newSuspicionMeter;
+        suspicionMeter = new Vector3(
+    Mathf.Round(suspicionMeter.x * 10f) / 10f,
+    Mathf.Round(suspicionMeter.y * 10f) / 10f,
+    Mathf.Round(suspicionMeter.z * 10f) / 10f
+);
 
         enemy_ai.SetVariableValue<List<Vector3>>("GetCuriousCoordinates", ai.getCuriousCoordinates.ToList<Vector3>());
         enemy_ai.SetVariableValue<List<Vector3>>("GetSpottedCoordinates", ai.getSpottedCoordinates.ToList<Vector3>());
@@ -61,7 +63,7 @@ public class WatchPlayer : MonoBehaviour
         enemy_ai.SetVariableValue<bool>("SixthSense", ai.sixthSense);
         enemy_ai.SetVariableValue<bool>("ImmediateSense", ai.immediateSense);
         enemy_ai.SetVariableValue<float>("SixthSenseVerticalOffset", ai.sixthSenseVerticalOffset);
-        enemy_ai.SetVariableValue<Vector2>("SuspicionMeter", suspicionMeter);
+        enemy_ai.SetVariableValue<Vector3>("SuspicionMeter", suspicionMeter);
     }
     private void OnDrawGizmos()
     {
