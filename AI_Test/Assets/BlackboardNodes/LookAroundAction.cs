@@ -126,7 +126,7 @@ public partial class LookAroundAction : Action
         if (candidateDetection == Detection.Idle || candidateDetection == Detection.Searching)
         {
             GradualSuspicionReduction();
-            suspicionMeterVisual.Value = currentSuspicionMeter / maxDurationBeforeSpotted;
+            suspicionMeterVisual.Value = currentSuspicionMeter.Value / maxDurationBeforeSpotted;
             return Status.Running;
         }
 
@@ -268,7 +268,7 @@ public partial class LookAroundAction : Action
         {
             averageDistance /= amountOfBonesSeen;
 
-            float oldSuspicionMeterValue = currentSuspicionMeter;
+            float oldSuspicionMeterValue = currentSuspicionMeter.Value;
 
             //the closer the enemy is to the player, the faster the player is detected,
             //but it is a static buildup if it's just curious
@@ -299,7 +299,7 @@ public partial class LookAroundAction : Action
                         oldMax: maxDurationBeforeSpotted,
                         newMin: 0,
                         newMax: 1,
-                        oldValue: currentSuspicionMeter
+                        oldValue: currentSuspicionMeter.Value
                         );
 
         suspicionMeterVisual.Value = adjustedCurrentSuspicionMeter;
@@ -310,13 +310,13 @@ public partial class LookAroundAction : Action
     private void GradualSuspicionReduction()
     {
         //for the future, I'd like the speed of this to go down more consistantly, but this is fine for now
-        if (currentSuspicionMeter > 0)
+        if (currentSuspicionMeter.Value > 0)
         {
             currentSuspicionMeter.Value -= (maxDurationBeforeSpotted * 0.25f) * Time.deltaTime;
         }
 
         //prevents accidental negative numbers
-        if (currentSuspicionMeter < 0)
+        if (currentSuspicionMeter.Value < 0)
         {
             currentSuspicionMeter.Value = 0;
         }
