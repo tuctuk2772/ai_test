@@ -21,6 +21,9 @@ public partial class LookAroundAction : Action
 {
     //note - this can be optimized further, i want to eventually have one raycast per frame as opposed to overloading with 10 raycasts, like Splinter Cell Blacklist
 
+    //not assigned, this is set within each block that this script is called
+    [SerializeReference] public BlackboardVariable<bool> canDecreaseSuspicion;
+
     [SerializeReference] public BlackboardVariable<GameObject> Agent;
     [SerializeReference] public BlackboardVariable<Transform> Player;
     [SerializeReference] public BlackboardVariable<Animator> Player_Animator;
