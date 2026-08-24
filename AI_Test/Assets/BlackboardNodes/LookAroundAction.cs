@@ -87,7 +87,6 @@ public partial class LookAroundAction : Action
     protected override Status OnStart()
     {
         playerLayer = LayerMask.NameToLayer("Player");
-        Debug.Log(suspicionMeter.Value);
         return Status.Running;
     }
 
