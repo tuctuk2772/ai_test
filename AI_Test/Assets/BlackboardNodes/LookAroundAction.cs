@@ -128,7 +128,6 @@ public partial class LookAroundAction : Action
         if (candidateDetection == Detection.Idle || candidateDetection == Detection.Searching)
         {
             GradualSuspicionReduction();
-            suspicionMeterVisual.Value = currentSuspicionMeter.Value / maxDurationBeforeSpotted;
             return Status.Running;
         }
 
@@ -137,10 +136,7 @@ public partial class LookAroundAction : Action
         //    Debug.Log(candidateDetection);
         //}
 
-        if (PlayerSeen(candidateDetection, ref candidateCoordinates))
-        {
-            CurrentDetection.Value = candidateDetection;
-        }
+        currentSuspicionMeter.Value = SuspicionBuilding(candidateDetection, ref candidateCoordinates);
 
         return Status.Running;
     }
@@ -211,7 +207,7 @@ public partial class LookAroundAction : Action
     #endregion
 
     //the final output is based on a timer, not automatically detected
-    private bool PlayerSeen(Detection outcomeDetection, ref List<Vector3> zoneCoordinates)
+    private float SuspicionBuilding(Detection outcomeDetection, ref List<Vector3> zoneCoordinates)
     {
         Vector3 origin = HeadBone.Value.position;
 
@@ -252,12 +248,6 @@ public partial class LookAroundAction : Action
                 averageDistance += targetBone.distance;
             }
         }
-
-        //NEED TO SAVE THIS UP HERE, IMPORTANT
-        float oldMaxDurationBeforeSpotted = maxDurationBeforeSpotted;
-
-        //by default, the max duration is set to the max suspicion meter
-        maxDurationBeforeSpotted = suspicionMeter.Value.y;
 
         suspicionGrowing = visibilityValue > 5 ? true : false;
 

@@ -15,15 +15,14 @@ public partial class ConditionalDetectionStateModifier : Modifier
 
     protected override Status OnStart()
     {
-        if(CurrentSuspicionMeter.Value >= SuspicionMeter.Value.z)
-        {
-
-        }
-
-
-        if(CurrentSuspicionMeter.Value >= SuspicionMeter.Value.y)
+        if (CurrentSuspicionMeter.Value >= SuspicionMeter.Value.z)
         {
             currentDetection.Value = Detection.Curious;
+        }
+
+        if (CurrentSuspicionMeter.Value >= SuspicionMeter.Value.y)
+        {
+            currentDetection.Value = Detection.Spotted;
         }
 
         return Status.Running;

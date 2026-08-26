@@ -54,7 +54,9 @@ Material:
     - _BorderColor: {r: 1, g: 1, b: 1, a: 1}
     - _ClipRect: {r: 0, g: 0, b: 0, a: 0}
     - _CuriousColor: {r: 0.854902, g: 0.6470588, b: 0.1254902, a: 1}
+    - _DefaultColor: {r: 1, g: 1, b: 1, a: 1}
     - _Dimensions: {r: 1, g: 1, b: 0, a: 0}
     - _SpottedColor: {r: 0.5450981, g: 0, b: 0, a: 1}
+    - _SuspicionMeter: {r: 1, g: 2, b: 1.5, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
