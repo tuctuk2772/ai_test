@@ -257,9 +257,11 @@ public partial class LookAroundAction : Action
             return Time.deltaTime;
         }
 
-        averageDistance /= amountOfBonesSeen;
+        //todo - i need an equation that speeds up the amount of time to detection depending of distance,
+        //but it needs to have a maximum of taking suspicionMeter.Value.x amount of time to detect
+        return 100f * Time.deltaTime;
 
-        
+        averageDistance /= amountOfBonesSeen;
 
         return 1f * Time.deltaTime;
 
