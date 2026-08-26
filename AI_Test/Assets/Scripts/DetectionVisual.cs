@@ -15,7 +15,7 @@ public class DetectionVisual : MonoBehaviour
 
         gameObject.GetComponent<MeshRenderer>().material = uniqueMat;
 
-        enemy.GetVariable<float>("SuspicionMeterVisual", out currentFill);
+        enemy.GetVariable<float>("CurrentSuspicionMeter", out currentFill);
     }
 
     private void Update()

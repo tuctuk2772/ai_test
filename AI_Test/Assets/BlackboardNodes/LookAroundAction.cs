@@ -41,12 +41,8 @@ public partial class LookAroundAction : Action
 
     [SerializeReference] public BlackboardVariable<Vector3> suspicionMeter;
     [SerializeReference] public BlackboardVariable<float> currentSuspicionMeter;
-    [SerializeReference] public BlackboardVariable<float> suspicionMeterVisual;
 
     private int playerLayer;
-    //private float currentSuspicionMeter = 0f;
-    private float maxDurationBeforeSpotted = 1f;
-
     private bool suspicionGrowing = false;
 
     #region ZoneSetup
@@ -127,7 +123,7 @@ public partial class LookAroundAction : Action
 
         if (candidateDetection == Detection.Idle || candidateDetection == Detection.Searching)
         {
-            GradualSuspicionReduction();
+            currentSuspicionMeter.Value -= GradualSuspicionReduction();
             return Status.Running;
         }
 
@@ -136,7 +132,7 @@ public partial class LookAroundAction : Action
         //    Debug.Log(candidateDetection);
         //}
 
-        currentSuspicionMeter.Value = SuspicionBuilding(candidateDetection, ref candidateCoordinates);
+        currentSuspicionMeter.Value += SuspicionBuilding(candidateDetection, ref candidateCoordinates);
 
         return Status.Running;
     }
@@ -251,7 +247,23 @@ public partial class LookAroundAction : Action
 
         suspicionGrowing = visibilityValue > 5 ? true : false;
 
-        //player is not seen at all or not enough
+        if(amountOfBonesSeen == 0 || !suspicionGrowing)
+        {
+            return -GradualSuspicionReduction();
+        }
+
+        if(outcomeDetection == Detection.Curious)
+        {
+            return Time.deltaTime;
+        }
+
+        averageDistance /= amountOfBonesSeen;
+
+        
+
+        return 1f * Time.deltaTime;
+
+        /*//player is not seen at all or not enough
         if (amountOfBonesSeen == 0 || !suspicionGrowing)
         {
             GradualSuspicionReduction();
@@ -296,22 +308,20 @@ public partial class LookAroundAction : Action
 
         suspicionMeterVisual.Value = adjustedCurrentSuspicionMeter;
 
-        return adjustedCurrentSuspicionMeter >= 1f;
+        return adjustedCurrentSuspicionMeter >= 1f;*/
     }
 
-    private void GradualSuspicionReduction()
+    private float GradualSuspicionReduction()
     {
-        //for the future, I'd like the speed of this to go down more consistantly, but this is fine for now
         if (currentSuspicionMeter.Value > 0)
         {
-            currentSuspicionMeter.Value -= (maxDurationBeforeSpotted * 0.25f) * Time.deltaTime;
+            return (suspicionMeter.Value.y * 0.25f) * Time.deltaTime;
         }
 
-        //prevents accidental negative numbers
-        if (currentSuspicionMeter.Value < 0)
-        {
+
             currentSuspicionMeter.Value = 0;
-        }
+            return 0;
+
     }
 
     protected override void OnEnd()
