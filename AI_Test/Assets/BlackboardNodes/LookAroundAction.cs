@@ -254,12 +254,17 @@ public partial class LookAroundAction : Action
 
         if(outcomeDetection == Detection.Curious)
         {
+            float adjustedTimeDebug = Time.deltaTime * ((suspicionMeter.Value.y - suspicionMeter.Value.x));
+
+            //the equation above isn't right, i can't seem to figure this out!
+
+            return adjustedTimeDebug;
+
             return Time.deltaTime;
         }
 
         //todo - i need an equation that speeds up the amount of time to detection depending of distance,
         //but it needs to have a maximum of taking suspicionMeter.Value.x amount of time to detect
-        return 100f * Time.deltaTime;
 
         averageDistance /= amountOfBonesSeen;
 
