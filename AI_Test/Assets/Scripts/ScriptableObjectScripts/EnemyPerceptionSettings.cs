@@ -25,16 +25,21 @@ public class EnemyPerceptionSettings : ScriptableObject
     [SerializeField, Range(0, 5)] public float sixthSenseVertical = 1f;
     [SerializeField, Range(0, 1)] public float sixthSenseAnglePercentage = 0.75f;
 
-    [HideInInspector] public Vector3[] getCuriousCoordinates = new Vector3[3];
-    [HideInInspector] public Vector3[] getSpottedCoordinates = new Vector3[3];
-    [HideInInspector] public Vector3[] sixthSenseCoordinates = new Vector3[3];
+    [System.NonSerialized] public Vector3[] getCuriousCoordinates = new Vector3[3];
+    [System.NonSerialized] public Vector3[] getSpottedCoordinates = new Vector3[3];
+    [System.NonSerialized] public Vector3[] sixthSenseCoordinates = new Vector3[3];
+
+    private void OnEnable()
+    {
+        BuildCoordinates();
+    }
 
     private void OnValidate()
     {
         BuildCoordinates();
     }
 
-    private void BuildCoordinates()
+    public void BuildCoordinates()
     {
         for (int i = 0; i < 3; i++)
         {

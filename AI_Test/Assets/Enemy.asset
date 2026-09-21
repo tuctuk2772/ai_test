@@ -665,8 +665,6 @@ MonoBehaviour:
           rid: 2599738674218795094
         currentSuspicionMeter:
           rid: 2599738674218795093
-        suspicionMeterVisual:
-          rid: 2599738674218795145
     - rid: 2599738674218795126
       type: {class: PatrolAction, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
@@ -822,8 +820,6 @@ MonoBehaviour:
           rid: 2599738674218795158
         FailIfUnreachable:
           rid: 2599738674218795159
-        enemyNumber:
-          rid: 2599738674218795160
     - rid: 2599738674218795138
       type: {class: 'BlackboardVariable`1[[System.Single, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
       data:
@@ -874,14 +870,6 @@ MonoBehaviour:
         m_Value: 0
     - rid: 2599738674218795144
       type: {class: 'BlackboardVariable`1[[System.Boolean, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        GUID:
-          m_Value0: 0
-          m_Value1: 0
-        Name: 
-        m_Value: 0
-    - rid: 2599738674218795145
-      type: {class: 'BlackboardVariable`1[[System.Single, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         GUID:
           m_Value0: 0
@@ -1007,14 +995,6 @@ MonoBehaviour:
           m_Value1: 0
         Name: 
         m_Value: 1
-    - rid: 2599738674218795160
-      type: {class: 'BlackboardVariable`1[[System.Int32, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        GUID:
-          m_Value0: 0
-          m_Value1: 0
-        Name: 
-        m_Value: 0
     - rid: 4800875794485215419
       type: {class: BehaviorGraphModule, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
@@ -1990,25 +1970,6 @@ MonoBehaviour:
         Parents: []
         PortModels: []
         Text: I need to change the way curious and spotted trigger!
-    - rid: 2599738628912185344
-      type: {class: BehaviorGraphNodeModel/FieldModel, ns: Unity.Behavior, asm: Unity.Behavior.Authoring}
-      data:
-        FieldName: enemyNumber
-        Type:
-          m_SerializableType: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
-            PublicKeyToken=b77a5c561934e089
-        LocalValue:
-          rid: 2599738628912185345
-        LinkedVariable:
-          rid: -2
-    - rid: 2599738628912185345
-      type: {class: 'BlackboardVariable`1[[System.Int32, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        GUID:
-          m_Value0: 0
-          m_Value1: 0
-        Name: 
-        m_Value: 0
     - rid: 2599738628912185873
       type: {class: StickyNoteModel, ns: Unity.Behavior.GraphFramework, asm: Unity.Behavior.GraphFramework}
       data:
@@ -3264,7 +3225,6 @@ MonoBehaviour:
         - rid: 4800876223768297795
         - rid: 4800876223768297796
         - rid: 4800876223768297797
-        - rid: 2599738628912185344
     - rid: 4800876223768297788
       type: {class: PortModel, ns: Unity.Behavior.GraphFramework, asm: Unity.Behavior.GraphFramework}
       data:
@@ -4021,7 +3981,6 @@ MonoBehaviour:
         - rid: 5540314957328941999
         - rid: 5346001773256245316
         - rid: 3290608838298304667
-        - rid: 6453772971085136147
     - rid: 5540314956912918656
       type: {class: PortModel, ns: Unity.Behavior.GraphFramework, asm: Unity.Behavior.GraphFramework}
       data:
@@ -5064,25 +5023,6 @@ MonoBehaviour:
         IsExposed: 1
         m_IsShared: 1
         m_Value: {fileID: 0}
-    - rid: 6453772971085136147
-      type: {class: BehaviorGraphNodeModel/FieldModel, ns: Unity.Behavior, asm: Unity.Behavior.Authoring}
-      data:
-        FieldName: suspicionMeterVisual
-        Type:
-          m_SerializableType: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
-            PublicKeyToken=b77a5c561934e089
-        LocalValue:
-          rid: 6453772971085136148
-        LinkedVariable:
-          rid: -2
-    - rid: 6453772971085136148
-      type: {class: 'BlackboardVariable`1[[System.Single, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        GUID:
-          m_Value0: 0
-          m_Value1: 0
-        Name: 
-        m_Value: 0
 --- !u!114 &1140775093984687733
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5305,7 +5245,7 @@ MonoBehaviour:
   - rid: 5540314957328941909
   - rid: 3290608838298304582
   - rid: 5346001773256245400
-  m_VersionTimestamp: 639233541591018859
+  m_VersionTimestamp: 639256109604237819
   m_CommandBuffer:
     m_Commands: []
   m_RuntimeBlackboardAsset: {fileID: 1140775093984687733}
@@ -5399,7 +5339,7 @@ MonoBehaviour:
           m_Value0: 7769408168238420296
           m_Value1: 9476196493092312983
         Name: GetCuriousCoordinates
-        IsExposed: 0
+        IsExposed: 1
         m_IsShared: 0
         m_Value: []
     - rid: 5540314956912919456
@@ -5409,7 +5349,7 @@ MonoBehaviour:
           m_Value0: 4896087241792728807
           m_Value1: 14061660150856840453
         Name: GetSpottedCoordinates
-        IsExposed: 0
+        IsExposed: 1
         m_IsShared: 0
         m_Value: []
     - rid: 5540314956912919532
@@ -5419,7 +5359,7 @@ MonoBehaviour:
           m_Value0: 5680931221890107619
           m_Value1: 4885876780268913310
         Name: SixthSenseCoordinates
-        IsExposed: 0
+        IsExposed: 1
         m_IsShared: 0
         m_Value: []
     - rid: 5540314957328941402

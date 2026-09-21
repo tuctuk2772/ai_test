@@ -8291,7 +8291,7 @@ MonoBehaviour:
   enemy_ai: {fileID: 972718120}
   _player: {fileID: 1762682265}
   memoryDuration: 5
-  suspicionMeter: {x: 0.99999994, y: 7.035088, z: 6.005849}
+  suspicionMeter: {x: 0.98790324, y: 4.032258, z: 2.9637096}
   enemyPerceptionSettings: {fileID: 11400000, guid: 1db6c91455bf5dd488ba17cc8a7b72ec, type: 2}
 --- !u!114 &969324367
 MonoBehaviour:

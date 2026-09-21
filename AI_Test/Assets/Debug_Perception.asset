@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b505deba04d25774c995ee49e1436f3d, type: 3}
   m_Name: Debug_Perception
   m_EditorClassIdentifier: Assembly-CSharp::EnemyPerceptionSettings
-  getSpottedVerticalOffset: 0
-  getSpottedVerticalMaxDistance: 0
-  getSpottedHorizontalMaxDistance: 0
+  getSpottedVerticalOffset: 0.396
+  getSpottedVerticalMaxDistance: 1
+  getSpottedHorizontalMaxDistance: 1.2
   getSpottedHorizontalMaxPercentage: 0.25
   getSpottedVerticalMaxPercentage: 0.8
   getCuriousVerticalOffset: 0
@@ -33,9 +33,9 @@ MonoBehaviour:
   - {x: 8, y: 0, z: 8.25}
   - {x: 5.6, y: 0, z: 15}
   getSpottedCoordinates:
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
+  - {x: 0.96000004, y: 0, z: 0.396}
+  - {x: 1.2, y: 0, z: 0.646}
+  - {x: 0.96000004, y: 0, z: 1.396}
   sixthSenseCoordinates:
   - {x: 5, y: 0, z: -0.25}
   - {x: 5, y: 0, z: -2.25}

@@ -127,10 +127,7 @@ public partial class LookAroundAction : Action
             return Status.Running;
         }
 
-        //if (PlayerSeen(candidateDetection, ref candidateCoordinates))
-        //{
-        //    Debug.Log(candidateDetection);
-        //}
+        Debug.Log($"{GetSpottedCoordinates.Value[0]}, {GetSpottedCoordinates.Value[1]}, {GetSpottedCoordinates.Value[2]}");
 
         currentSuspicionMeter.Value += SuspicionBuilding(candidateDetection, ref candidateCoordinates);
 
@@ -247,20 +244,15 @@ public partial class LookAroundAction : Action
 
         suspicionGrowing = visibilityValue > 5 ? true : false;
 
-        if(amountOfBonesSeen == 0 || !suspicionGrowing)
+        if (amountOfBonesSeen == 0 || !suspicionGrowing)
         {
             return -GradualSuspicionReduction();
         }
 
-        if(outcomeDetection == Detection.Curious)
+        if (outcomeDetection == Detection.Curious)
         {
-            float adjustedTimeDebug = Time.deltaTime * ((suspicionMeter.Value.y - suspicionMeter.Value.x));
-
-            //the equation above isn't right, i can't seem to figure this out!
-
-            return adjustedTimeDebug;
-
-            return Time.deltaTime;
+            Debug.Log("curious!");
+            return 0f;
         }
 
         //todo - i need an equation that speeds up the amount of time to detection depending of distance,
@@ -268,7 +260,9 @@ public partial class LookAroundAction : Action
 
         averageDistance /= amountOfBonesSeen;
 
-        return 1f * Time.deltaTime;
+        float distanceMod = suspicionMeter.Value.y / suspicionMeter.Value.x;
+
+        return distanceMod * Time.deltaTime;
 
         /*//player is not seen at all or not enough
         if (amountOfBonesSeen == 0 || !suspicionGrowing)
@@ -325,9 +319,8 @@ public partial class LookAroundAction : Action
             return (suspicionMeter.Value.y * 0.25f) * Time.deltaTime;
         }
 
-
-            currentSuspicionMeter.Value = 0;
-            return 0;
+        currentSuspicionMeter.Value = 0;
+        return 0;
 
     }
 

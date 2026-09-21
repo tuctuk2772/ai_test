@@ -19,9 +19,6 @@ public class WatchPlayer : MonoBehaviour
     [Header("Suspicion")]
     [SerializeField] private Vector3 suspicionMeter;
 
-    //[SerializeField, Range(0, 10), InspectorName("Suspicion Meter Max (sec)")] private float suspicionMeterMax;
-    //[SerializeField, Range(0, 5), InspectorName("Suspicion Meter Min (sec)")] private float suspicionMeterMin;
-
     [Header("Enemy Perception Settings")]
     [SerializeField, InspectorName("")] private EnemyPerceptionSettings enemyPerceptionSettings;
 
@@ -50,14 +47,20 @@ public class WatchPlayer : MonoBehaviour
 
         //suspicion meter rounding
         suspicionMeter = new Vector3(
-    Mathf.Round(suspicionMeter.x * 10f) / 10f,
-    Mathf.Round(suspicionMeter.y * 10f) / 10f,
-    Mathf.Round(suspicionMeter.z * 10f) / 10f
-);
+            Mathf.Round(suspicionMeter.x * 10f) / 10f,
+            Mathf.Round(suspicionMeter.y * 10f) / 10f,
+            Mathf.Round(suspicionMeter.z * 10f) / 10f
+        );
 
-        enemy_ai.SetVariableValue<List<Vector3>>("GetCuriousCoordinates", ai.getCuriousCoordinates.ToList<Vector3>());
-        enemy_ai.SetVariableValue<List<Vector3>>("GetSpottedCoordinates", ai.getSpottedCoordinates.ToList<Vector3>());
-        enemy_ai.SetVariableValue<List<Vector3>>("SixthSenseCoordinates", ai.sixthSenseCoordinates.ToList<Vector3>());
+        ai.BuildCoordinates(); //redundant, but it sometimes it doesn't transfer the new values
+
+        SetVariable("GetSpottedCoordinates", ai.getSpottedCoordinates.ToList());
+        SetVariable("GetCuriousCoordinates", ai.getCuriousCoordinates.ToList());
+        SetVariable("SixthSenseCoordinates", ai.sixthSenseCoordinates.ToList());
+
+        Debug.Log(enemyPerceptionSettings.ToString());
+        Debug.Log($"{ai.getSpottedCoordinates[0]}, {ai.getSpottedCoordinates[1]}, {ai.getSpottedCoordinates[2]}");
+
         enemy_ai.SetVariableValue<Animator>("Enemy", enemy);
         enemy_ai.SetVariableValue<Transform>("HeadBone", headBone);
         enemy_ai.SetVariableValue<bool>("SixthSense", ai.sixthSense);
@@ -65,6 +68,15 @@ public class WatchPlayer : MonoBehaviour
         enemy_ai.SetVariableValue<float>("SixthSenseVerticalOffset", ai.sixthSenseVerticalOffset);
         enemy_ai.SetVariableValue<Vector3>("SuspicionMeter", suspicionMeter);
     }
+
+    private void SetVariable<T>(string name, T value)
+    {
+        if (!enemy_ai.SetVariableValue<T>(name, value))
+        {
+            Debug.LogError($"Failed {name}");
+        }
+    }
+
     private void OnDrawGizmos()
     {
         if (ai == null)
