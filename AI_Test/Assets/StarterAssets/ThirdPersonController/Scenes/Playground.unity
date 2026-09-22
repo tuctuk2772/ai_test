@@ -8291,8 +8291,8 @@ MonoBehaviour:
   enemy_ai: {fileID: 972718120}
   _player: {fileID: 1762682265}
   memoryDuration: 5
-  suspicionMeter: {x: 0.98790324, y: 4.032258, z: 2.9637096}
-  enemyPerceptionSettings: {fileID: 11400000, guid: 1db6c91455bf5dd488ba17cc8a7b72ec, type: 2}
+  suspicionMeter: {x: 0.98790324, y: 2.4736843, z: 1.9590642}
+  enemyPerceptionSettings: {fileID: 11400000, guid: edc10027cb0514f4994988a5f2c27cf5, type: 2}
 --- !u!114 &969324367
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8501,7 +8501,6 @@ MonoBehaviour:
   mainCamera: {fileID: 964371651}
   animator: {fileID: 972718122}
   enemy_ai: {fileID: 972718120}
-  enemyPerceptionSettings: {fileID: 11400000, guid: edc10027cb0514f4994988a5f2c27cf5, type: 2}
 --- !u!1 &1031252228
 GameObject:
   m_ObjectHideFlags: 0

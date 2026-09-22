@@ -10,12 +10,19 @@ public class OutOfSight : MonoBehaviour
     [SerializeField] private Animator animator;
     [SerializeField] private BehaviorGraphAgent enemy_ai;
 
-    [SerializeField] private EnemyPerceptionSettings enemyPerceptionSettings;
+    private EnemyPerceptionSettings enemyPerceptionSettings;
 
     Vector3[] ogGetCuriousPoints, ogGetSpottedPoints;
 
     private void Start()
     {
+        EnemyPerceptionSettings settings = transform.parent.GetComponent<WatchPlayer>().enemyPerceptionSettings;
+        if (settings == null)
+        {
+            Debug.LogError("script not found!");
+        }
+        enemyPerceptionSettings = settings;
+
         ogGetCuriousPoints = enemyPerceptionSettings.getCuriousCoordinates;
         ogGetSpottedPoints = enemyPerceptionSettings.getSpottedCoordinates;
     }
@@ -23,10 +30,10 @@ public class OutOfSight : MonoBehaviour
     private void Update()
     {
         animator.enabled = isVisible();
-        Debug_AssignUpdatedCoordinates(isBehind() ? 1f : 2f);
+        AssignUpdatedCoordinates(isBehind() ? 1f : 2f);
     }
 
-    private void Debug_AssignUpdatedCoordinates(float dividedFactor)
+    private void AssignUpdatedCoordinates(float dividedFactor)
     {
         Vector3[] newGetCuriousPoints = new Vector3[3], newGetSpottedPoints = new Vector3[3];
 

@@ -3,7 +3,7 @@ using UnityEditor;
 using Unity.VisualScripting.YamlDotNet.Core.Tokens;
 using Unity.Collections.LowLevel.Unsafe;
 
-[CustomEditor(typeof(WatchPlayer)), CanEditMultipleObjects]
+[CustomEditor(typeof(WatchPlayer))]
 public class EnemyVisualEditor : Editor
 {
     private const float suspicionMin = 0f;

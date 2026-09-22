@@ -127,14 +127,10 @@ public partial class LookAroundAction : Action
             return Status.Running;
         }
 
-        Debug.Log($"{GetSpottedCoordinates.Value[0]}, {GetSpottedCoordinates.Value[1]}, {GetSpottedCoordinates.Value[2]}");
-
         currentSuspicionMeter.Value += SuspicionBuilding(candidateDetection, ref candidateCoordinates);
 
         return Status.Running;
     }
-
-
 
     #region CoordinateChecks
     //coordinates to calculate correctly are 0 and 1, because it is reflected horizontally
@@ -251,7 +247,6 @@ public partial class LookAroundAction : Action
 
         if (outcomeDetection == Detection.Curious)
         {
-            Debug.Log("curious!");
             return 0f;
         }
 

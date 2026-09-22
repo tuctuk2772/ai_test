@@ -20,7 +20,7 @@ public class WatchPlayer : MonoBehaviour
     [SerializeField] private Vector3 suspicionMeter;
 
     [Header("Enemy Perception Settings")]
-    [SerializeField, InspectorName("")] private EnemyPerceptionSettings enemyPerceptionSettings;
+    [SerializeField, InspectorName("")] public EnemyPerceptionSettings enemyPerceptionSettings;
 
     //just lazy, want to write a bit less :)
     private EnemyPerceptionSettings ai => enemyPerceptionSettings;
@@ -52,14 +52,10 @@ public class WatchPlayer : MonoBehaviour
             Mathf.Round(suspicionMeter.z * 10f) / 10f
         );
 
-        ai.BuildCoordinates(); //redundant, but it sometimes it doesn't transfer the new values
-
+        //i was having some issues getting these variables assigned
         SetVariable("GetSpottedCoordinates", ai.getSpottedCoordinates.ToList());
         SetVariable("GetCuriousCoordinates", ai.getCuriousCoordinates.ToList());
         SetVariable("SixthSenseCoordinates", ai.sixthSenseCoordinates.ToList());
-
-        Debug.Log(enemyPerceptionSettings.ToString());
-        Debug.Log($"{ai.getSpottedCoordinates[0]}, {ai.getSpottedCoordinates[1]}, {ai.getSpottedCoordinates[2]}");
 
         enemy_ai.SetVariableValue<Animator>("Enemy", enemy);
         enemy_ai.SetVariableValue<Transform>("HeadBone", headBone);

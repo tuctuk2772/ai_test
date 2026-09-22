@@ -28,15 +28,3 @@ MonoBehaviour:
   sixthSenseHorizontal: 5
   sixthSenseVertical: 2
   sixthSenseAnglePercentage: 0.15
-  getCuriousCoordinates:
-  - {x: 5.6, y: 0, z: 0}
-  - {x: 8, y: 0, z: 8.25}
-  - {x: 5.6, y: 0, z: 15}
-  getSpottedCoordinates:
-  - {x: 0.96000004, y: 0, z: 0.396}
-  - {x: 1.2, y: 0, z: 0.646}
-  - {x: 0.96000004, y: 0, z: 1.396}
-  sixthSenseCoordinates:
-  - {x: 5, y: 0, z: -0.25}
-  - {x: 5, y: 0, z: -2.25}
-  - {x: 0.75, y: 0, z: -2.25}
