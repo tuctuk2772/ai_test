@@ -8,10 +8,6 @@ using UniversalFunctions;
 using Action = Unity.Behavior.Action;
 
 /*todo -
- * - decouple increase and decrease detection
- * - decouple visual conversion from regular detecton float (two separate Blackboard Variables)
- * - convert PlayerSeen to float - it's not a binary system
- *      - switching states should be in behaviour tree
  * - move trap/pent checks into separate script
 */
 
@@ -247,7 +243,7 @@ public partial class LookAroundAction : Action
 
         if (outcomeDetection == Detection.Curious)
         {
-            return 0f;
+            return Time.deltaTime;
         }
 
         //todo - i need an equation that speeds up the amount of time to detection depending of distance,
@@ -256,6 +252,8 @@ public partial class LookAroundAction : Action
         averageDistance /= amountOfBonesSeen;
 
         float distanceMod = suspicionMeter.Value.y / suspicionMeter.Value.x;
+
+        return Time.deltaTime; //temp
 
         return distanceMod * Time.deltaTime;
 
@@ -309,6 +307,11 @@ public partial class LookAroundAction : Action
 
     private float GradualSuspicionReduction()
     {
+        if (!canDecreaseSuspicion.Value)
+        {
+            return 0;
+        }
+
         if (currentSuspicionMeter.Value > 0)
         {
             return (suspicionMeter.Value.y * 0.25f) * Time.deltaTime;

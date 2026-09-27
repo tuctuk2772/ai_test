@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Debug_Perception
   m_EditorClassIdentifier: Assembly-CSharp::EnemyPerceptionSettings
   getSpottedVerticalOffset: 0.396
-  getSpottedVerticalMaxDistance: 1
+  getSpottedVerticalMaxDistance: 2.4
   getSpottedHorizontalMaxDistance: 1.2
   getSpottedHorizontalMaxPercentage: 0.25
   getSpottedVerticalMaxPercentage: 0.8

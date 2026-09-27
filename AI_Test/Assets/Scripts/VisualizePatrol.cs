@@ -81,7 +81,7 @@ public class VisualizePatrol : MonoBehaviour
         //todo - make sure overhangs work
         while (Physics.Raycast(patrolPoint.transform.position, Vector3.up, Mathf.Infinity))
         {
-            Debug.Log($"{patrolPoint.name} hit!");
+            //Debug.Log($"{patrolPoint.name} hit!");
             patrolPoint.transform.position += Vector3.up * 0.15f;
         }
     }
