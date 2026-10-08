@@ -38,6 +38,8 @@ public partial class LookAroundAction : Action
     [SerializeReference] public BlackboardVariable<Vector3> suspicionMeter;
     [SerializeReference] public BlackboardVariable<float> currentSuspicionMeter;
 
+    [SerializeReference] public BlackboardVariable<bool> spotted;
+
     private int playerLayer;
     private bool suspicionGrowing = false;
 
