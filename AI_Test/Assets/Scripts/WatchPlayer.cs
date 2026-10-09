@@ -63,6 +63,8 @@ public class WatchPlayer : MonoBehaviour
         enemy_ai.SetVariableValue<bool>("ImmediateSense", ai.immediateSense);
         enemy_ai.SetVariableValue<float>("SixthSenseVerticalOffset", ai.sixthSenseVerticalOffset);
         enemy_ai.SetVariableValue<Vector3>("SuspicionMeter", suspicionMeter);
+
+        enemy_ai.SetVariableValue<float>("ActiveMemoryDuration", memoryDuration);
     }
 
     private void SetVariable<T>(string name, T value)
