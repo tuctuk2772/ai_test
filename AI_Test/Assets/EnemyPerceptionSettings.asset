@@ -24,7 +24,8 @@ MonoBehaviour:
   getCuriousVerticalMaxPercentage: 0.7
   sixthSense: 1
   immediateSense: 1
-  sixthSenseVerticalOffset: 0.25
+  sixthSenseVerticalOffset: 0
   sixthSenseHorizontal: 5
-  sixthSenseVertical: 2
-  sixthSenseAnglePercentage: 0.15
+  sixthSenseVertical: 3
+  sixthSenseAnglePercentage: 0.05
+  maxVerticalOffset: 5

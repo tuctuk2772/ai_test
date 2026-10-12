@@ -38,10 +38,10 @@ public partial class LookAroundAction : Action
     [SerializeReference] public BlackboardVariable<Vector3> suspicionMeter;
     [SerializeReference] public BlackboardVariable<float> currentSuspicionMeter;
 
-    [SerializeReference] public BlackboardVariable<bool> spotted;
+    [SerializeReference] public BlackboardVariable<bool> InLineOfSight;
+    [SerializeReference] public BlackboardVariable<float> MaxVerticalOffset;
 
     private int playerLayer;
-    private bool suspicionGrowing = false;
 
     #region ZoneSetup
     private struct DetectionZone
@@ -166,6 +166,7 @@ public partial class LookAroundAction : Action
     #region BodySetup
     private struct Body
     {
+        public HumanBodyBones name;
         public Vector3 bonePosition;
         public float distance;
 
@@ -183,6 +184,7 @@ public partial class LookAroundAction : Action
 
         return new Body
         {
+            name = bone,
             bonePosition = bonePosition,
             seenValue = value,
 
@@ -222,7 +224,7 @@ public partial class LookAroundAction : Action
         {
             Body targetBone = targets[i];
 
-            if (Mathf.Abs(targetBone.verticalOffset) > 3f)
+            if (Mathf.Abs(targetBone.verticalOffset) > MaxVerticalOffset.Value)
             {
                 continue;
             }
@@ -236,10 +238,10 @@ public partial class LookAroundAction : Action
             }
         }
 
-        suspicionGrowing = visibilityValue > 5 ? true : false;
+        InLineOfSight.Value = visibilityValue > 5 ? true : false;
 
         //player is not seen at all or not enough
-        if (amountOfBonesSeen == 0 || !suspicionGrowing)
+        if (amountOfBonesSeen == 0 || !InLineOfSight.Value)
         {
             return -GradualSuspicionReduction();
         }
@@ -256,14 +258,14 @@ public partial class LookAroundAction : Action
         float shortestDuration = suspicionMeter.Value.y / suspicionMeter.Value.x;
 
         float durationModifier = _UniversalFunctions.ConvertRangeNewValue(
-            oldMin: Mathf.Abs(zoneCoordinates[0].z),
-            oldMax: Mathf.Abs(zoneCoordinates[2].z),
+            oldMin: Mathf.Abs(zoneCoordinates[2].z),
+            oldMax: Mathf.Abs(zoneCoordinates[0].z),
             newMin: 1f,
             newMax: shortestDuration,
             oldValue: averageDistance
             );
 
-        Debug.Log(shortestDuration);
+        //Debug.Log($"duration: {durationModifier}, distance: {averageDistance}");
 
         return durationModifier * Time.deltaTime;
     }

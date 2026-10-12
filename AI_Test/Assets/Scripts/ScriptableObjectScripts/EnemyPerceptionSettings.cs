@@ -21,9 +21,12 @@ public class EnemyPerceptionSettings : ScriptableObject
     [SerializeField] public bool sixthSense = true;
     [SerializeField] public bool immediateSense = false;
     [SerializeField, Range(0, 2)] public float sixthSenseVerticalOffset = 0.25f;
-    [SerializeField, Range(0, 5)] public float sixthSenseHorizontal = 2f;
-    [SerializeField, Range(0, 5)] public float sixthSenseVertical = 1f;
+    [SerializeField, Range(0, 10)] public float sixthSenseHorizontal = 2f;
+    [SerializeField, Range(0, 10)] public float sixthSenseVertical = 1f;
     [SerializeField, Range(0, 1)] public float sixthSenseAnglePercentage = 0.75f;
+
+    [Header("Additional Varaibles")]
+    [SerializeField, Range(0, 5)] public float maxVerticalOffset = 3f;
 
     [System.NonSerialized] public Vector3[] getCuriousCoordinates = new Vector3[3];
     [System.NonSerialized] public Vector3[] getSpottedCoordinates = new Vector3[3];
