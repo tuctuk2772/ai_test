@@ -8568,6 +8568,7 @@ MonoBehaviour:
   - rid: 5540315073713275198
   - rid: 3431466172125282614
   - rid: 5540315027621282044
+  - rid: 7005593606126305425
   m_OriginalGraph: {fileID: 0}
   m_IsInitialised: 0
   m_IsStarted: 0
@@ -8606,6 +8607,14 @@ MonoBehaviour:
           m_Value1: 13987041635688610373
         Name: Player
         m_Value: {fileID: 1762682261}
+    - rid: 7005593606126305425
+      type: {class: 'BlackboardVariable`1[[Detection, Assembly-CSharp]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 6702043006579719913
+          m_Value1: 17383892266431033353
+        Name: Detection
+        m_Value: 2
 --- !u!195 &972718121
 NavMeshAgent:
   m_ObjectHideFlags: 0
