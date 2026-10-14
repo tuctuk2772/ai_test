@@ -103,6 +103,7 @@ namespace StarterAssets
         private int _animIDJump;
         private int _animIDFreeFall;
         private int _animIDMotionSpeed;
+        private int _animIDCrouch;
 
 #if ENABLE_INPUT_SYSTEM 
         private PlayerInput _playerInput;
@@ -180,6 +181,7 @@ namespace StarterAssets
             _animIDJump = Animator.StringToHash("Jump");
             _animIDFreeFall = Animator.StringToHash("FreeFall");
             _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
+            _animIDCrouch = Animator.StringToHash("Crouch");
         }
 
         private void GroundedCheck()
@@ -394,6 +396,7 @@ namespace StarterAssets
             if (_input.crouch)
             {
                 _input.crouch = false;
+                _animator.SetBool(_animIDCrouch, false);
                 return;
             }
 
@@ -401,6 +404,7 @@ namespace StarterAssets
             {
                 _input.crouch = true;
                 _input.jump = false;
+                _animator.SetBool(_animIDCrouch, true);
             }
         }
 
