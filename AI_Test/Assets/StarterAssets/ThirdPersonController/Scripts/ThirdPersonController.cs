@@ -21,6 +21,9 @@ namespace StarterAssets
         [Tooltip("Sprint speed of the character in m/s")]
         public float SprintSpeed = 5.335f;
 
+        [Tooltip("Crouch speed of the character in m/s")]
+        public float CrouchSpeed = 1.5f;
+
         [Tooltip("How fast the character turns to face movement direction")]
         [Range(0.0f, 0.3f)]
         public float RotationSmoothTime = 0.12f;
@@ -159,6 +162,7 @@ namespace StarterAssets
         {
             _hasAnimator = TryGetComponent(out _animator);
 
+            HandleCrouchToggle();
             JumpAndGravity();
             GroundedCheck();
             Move();
@@ -218,6 +222,11 @@ namespace StarterAssets
         {
             // set target speed based on move speed, sprint speed and if sprint is pressed
             float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
+
+            if (_input.crouch && Grounded)
+            {
+                targetSpeed = CrouchSpeed;
+            }
 
             // a simplistic acceleration and deceleration designed to be easy to remove, replace, or iterate upon
 
@@ -284,6 +293,11 @@ namespace StarterAssets
 
         private void JumpAndGravity()
         {
+            if (_input.crouch)
+            {
+                _input.jump = false;
+            }
+
             if (Grounded)
             {
                 // reset the fall timeout timer
@@ -370,6 +384,24 @@ namespace StarterAssets
             Gizmos.DrawSphere(
                 new Vector3(transform.position.x, transform.position.y - GroundedOffset, transform.position.z),
                 GroundedRadius);
+        }
+
+        private void HandleCrouchToggle()
+        {
+            if (!_input.crouchToggleRequested) return;
+            _input.crouchToggleRequested = false;
+
+            if (_input.crouch)
+            {
+                _input.crouch = false;
+                return;
+            }
+
+            if (Grounded && _verticalVelocity <= 0.0f)
+            {
+                _input.crouch = true;
+                _input.jump = false;
+            }
         }
 
         private void OnFootstep(AnimationEvent animationEvent)
