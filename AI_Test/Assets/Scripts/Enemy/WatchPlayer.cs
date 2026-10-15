@@ -13,7 +13,6 @@ public class WatchPlayer : MonoBehaviour
 
     [Header("Memory")]
     [SerializeField, Range(0, 10)] private float memoryDuration;
-    private bool justLostTrack = false;
     private float currentTimeStarted;
 
     [Header("Suspicion")]
