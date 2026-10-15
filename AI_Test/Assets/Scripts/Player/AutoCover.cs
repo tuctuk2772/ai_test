@@ -10,6 +10,9 @@ public class AutoCover : MonoBehaviour
 
     [SerializeField] private LayerMask debugLayer;
 
+    private Vector3 coverNormal = Vector3.zero;
+    private bool inCover = false;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -32,7 +35,21 @@ public class AutoCover : MonoBehaviour
         {
             _animator.GetBoneTransform(HumanBodyBones.Head).transform.position =
                 _animator.GetBoneTransform(HumanBodyBones.Head).transform.position + (Vector3.up * 100f);
-            Debug.Log(hit.normal);
+            inCover = true;
+            coverNormal = hit.normal;
         }
+        else
+        {
+            inCover = false;
+        }
+    }
+
+    private void OnAnimatorIK(int layerIndex)
+    {
+        if (inCover)
+        {
+            _animator.bodyRotation = Quaternion.Euler(coverNormal);
+        }
+
     }
 }
